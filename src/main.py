@@ -262,15 +262,15 @@ def bandit_task(selected_value, arms, stimuli, feedback, window):
 
     if is_exp == True and cond_num == 1 or cond_num == 2:
         print('display fixation cross and arms')
-        #   while clock.getTime() < 2.0:
-            #draw(fixation_cross)
-            #arms, is_exp = get_random_toys([[toy1, True], [toy2, True]])  # they are always random
-            #if clock.getTime > 2.0 and cond_num == 1:
-            #    draw(sadface)
-            #    arms, is_exp = get_random_toys([[toy1, True], [toy2, True]])
-            #elif clock.getTime > 2.0 and cond_num == 2:
-            #    draw(neutralfaceface)
-    #    arms, is_exp = get_random_toys([[toy1, True], [toy2, True]])
+           while clock.getTime() < 2.0:
+            draw(fixation_cross)
+            arms, is_exp = get_random_toys([[toy1, True], [toy2, True]])  # they are always random
+            if clock.getTime > 2.0 and cond_num == 1:
+                draw(sadface)
+                arms, is_exp = get_random_toys([[toy1, True], [toy2, True]])
+            elif clock.getTime > 2.0 and cond_num == 2:
+                draw(neutralfaceface)
+        arms, is_exp = get_random_toys([[toy1, True], [toy2, True]])
 
     # screen  controls
     if is_exp == False and cond_num == 1 or cond_num == 2:
