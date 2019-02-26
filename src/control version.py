@@ -135,15 +135,23 @@ def get_instructions (instruction_list):
         print(result[0], [1])
         return result[0], result[1]
 
+def get_starting_screen_control (starting_screen_list):
+        result = (starting_screen_list)
+        print(result[0], [1])
+        return result[0], result[1]
+
+
+#starting_screen_list = {"text_rule_FixationCross": '+', "arms": ('toy1','toy2')}
+starting_screen_list = {"text_rule_FixationCross": ('fixation_cross'), "arms": ('gratings_h','gratings_v')}
+
 # instructions control block of reward condition (earn money)
-INSTRUCTIONS_REWARD_CONTR = """
-    Over the fixation point will be presented an amount of money 
-    (you start with debit condition (-1£) you can extinct your debit (0£) or earn one pound (1£) 
-    or stay in debit (-1£)!), 
-    your task is to earn the pound as many time as possible with one of the 2 arms available. 
-    One of the two is more successful and it will make earn money, 
-    the other one might make stay without money or make you loose. 
-    use left and right arrow to select the arm you think is successful. 
+INSTRUCTIONS_REWARD_CONTR = """INSTRUCTIONS:
+    Over the fixation point will be presented an amount of money.In this condition you will start with a  
+    debit condition (-1£). Your task is to extinct your debit and when possible earn one pound by using one of the two
+    arms (squares) available at the side of the screen.
+    One of the two is more successful and it is more likely that will make you extinct the debit or earn money.
+    The other one might make you remain in the debit condition. 
+    Use left and right arrows to select the arm you think is more successful. 
     Pay attention, the good arm may change!
 
     Good luck!
@@ -152,13 +160,12 @@ INSTRUCTIONS_REWARD_CONTR = """
     """
 
 # instructions control block of punishment condition (not lose money)
-INSTRUCTIONS_PUNISHMENT_CONTR = """
-    Over the fixation point will be presented an amount of money 
-    (you start with debit condition (-1£) you can extinct your debit (0£) or earn one pound (1£) or stay in debit (-1£)!), 
-    your task is to earn the pound as many time as possible with one of the 2 arms available. 
+INSTRUCTIONS_PUNISHMENT_CONTR = """INSTRUCTIONS:
+    Over the fixation point will be presented an amount of money. In this condition you will start with zero money (0£). 
+    Your task is to earn the pound as many time as possible with one of the 2 arms (squares) available. 
     One of the two is more successful and it will make earn money, 
-    the other one might make stay without money or make you loose. 
-    use left and right arrow to select the arm you think is successful. 
+    the other one might make stay without money or make you loose (-1£). 
+    Use left and right arrow to select the arm you think is successful. 
     Pay attention, the good arm may change!
 
     Good luck!
@@ -181,43 +188,35 @@ def bandit_task_control (selected_value, arms, stimuli, feedback, window):
     elif selected_value < 1 or selected_value > 2:
         sys.exit("Unknown condition number")
 
-print('instruction_result_text is %s and is_reward=%s' % (instruction_result_text, is_reward))
+    print('instruction_result is %s and is_reward=%s' % (instruction_result_text, is_reward))
 
-text_stim_screen = psychopy.visual.TextStim(
-    win=window,
-    text=instruction_result_text,
-    color=(-1, -1, -1), height=30.0)
-text_stim_screen.draw(window)
-win.flip()
-while True:
-    print('in while...')
-    response = psychopy.event.waitKeys(keyList=['space'])
-    print('after response')
-    print(response)
-    if 'space' in str(response):
-        print("selected space!")
-        break  # break out of the while-loo
+    text_stim_screen = psychopy.visual.TextStim(
+        win=window,
+        text=instruction_result_text,
+        color=(-1, -1, -1), height=30.0)
+    text_stim_screen.draw(window)
+    win.flip()
+    while True:
+        print('in while...')
+        response = psychopy.event.waitKeys(keyList=['space'])
+        print('after response')
+        print(response)
+        if 'space' in str(response):
+            print("selected space!")
+            break  # break out of the while-loop
 
-# screen  controls
+# starting screen
+    # screen experiments
+    print('starting screen is %d' % selected_value)
+    starting_screen_control = ""
+    if selected_value > 0:
+        starting_screen, is_reward = get_starting_screen_control (([fixation_cross, True],[arms, True]))
+        print('display fixation cross and arms')
+        while clock.getTime() < 1000:
+            gratings_h.draw()
+            gratings_v.draw()
+            fixation_cross.draw()
 
-if cond_num >0 and cond_num<3:
-    print('display fixation cross and arms')
-    while clock.getTime() < 2.0:
-        fixation_cross.draw() and gratings_h.draw() and gratings_v.draw()
-    while clock.getTime > 2.0 and cond_num == 1:
-        text_rule_minusone.draw() and gratings_h.draw() and gratings_v.draw()
-    while clock.getTime > 2.0 and cond_num == 2:
-        text_rule_zero.draw() and gratings_h.draw() and gratings_v.draw()
-        while True:
-            print('in while...')
-            response = psychopy.event.waitKeys(keyList=['left', 'right'])
-            print('after response')
-            print(response)
-            if 'left' in str(response):
-                print("left!")
-            elif 'right' in str(response):
-                print("right!")
-                break
 
 def control_trial(is_reward, s=None):
     print("start control with is_reward=%s..." % s)
