@@ -72,7 +72,7 @@ facesad_size = [150, 200]
 facehappy_size = [150, 200]
 faceneutral_size = [150, 200]
 screen_size = [1000, 1000]
-fixationcross_size = [50, 50]
+#fixationcross_size = [70, 70]
 
 # Setup the Window
 
@@ -94,7 +94,17 @@ toy2 = psychopy.visual.ImageStim(win=win, image="toy2_duck.png", color=(1.0, 1.0
 happyface = psychopy.visual.ImageStim(win=win, image="babyhappy2.png", color=(1.0, 1.0, 1.0), size=facehappy_size, units='pix', pos=[0, 200])
 neutralface = psychopy.visual.ImageStim(win=win, image="babyneutral2.png", color=(1.0, 1.0, 1.0), size=faceneutral_size, units='pix', pos=[0, 200])
 sadface = psychopy.visual.ImageStim(win=win, image="babyneg2.png", color=(1.0, 1.0, 1.0), size=facesad_size, units='pix', pos=[0, 200])
-fixation_cross = psychopy.visual.ImageStim(win=win, image="fixation_cross.png", color=(1.0, 1.0, 1.0), size=fixationcross_size, units='pix', pos=[0, 200])
+#fixation_cross = psychopy.visual.ImageStim(win=win, image="fixation_cross.png", color=(-1.0, -1.0, -1.0), size=fixationcross_size, units='pix', pos=[0, 200])
+
+#text_rule_FixationCross = "+"
+#text_stim_screen = psychopy.visual.TextStim(
+#    win=win,
+#    text=text_rule_FixationCross,
+#    color=(-1, -1, -1), pos=[0, 200])
+#win.flip()
+
+fixation_cross = visual.GratingStim(win, color=-1, colorSpace='rgb',
+                              tex=None, mask='circle', size=0.2)
 
 # def gender
 
@@ -118,32 +128,35 @@ instruction_list = {"soothe the baby": 'INSTRUCTIONS_REWARD_EXP', "excite the ba
 
 
 def get_starting_screen_experimental (starting_screen_list):
-        result = (instruction_list)
+        result = (starting_screen_list)
         print(result[0], [1])
         return result[0], result[1]
 
+
+#starting_screen_list = {"text_rule_FixationCross": '+', "arms": ('toy1','toy2')}
+starting_screen_list = {"text_rule_FixationCross": ('fixation_cross'), "arms": ('toy1','toy2')}
+
 # instructions experimental block of reward condition (earn money)
-INSTRUCTIONS_REWARD_EXP = """
-        Over the fixation point will be presented a distressed baby face, 
-        your task is to soothe the baby with one of the 2 toys available. 
-        One of the two is more successful and it will make the baby stop crying or being happy! 
-        the other one will not produce any change.
-        use left and right arrow to select the toy you think is better and  try to soothe the baby as much as possible!
-        Pay attention, the good toy may change!
+INSTRUCTIONS_REWARD_EXP = """INSTRUCTIONS:
+    Over the fixation point will be presented a distressed baby face, 
+    your task is to soothe the baby with one of the 2 toys available. 
+    One of the two is more successful and it will make the baby stop crying (neutral face) or being happy! 
+    The other one will not produce any change.
+    Use left and right arrows to select the toy you think is better and try to soothe the baby as much as possible!
+    Pay attention, the good toy may change!
 
-        Good luck!
+    Good luck!
 
-        Press 'space' to begin.
-        """
-
+    Press 'space' to begin.
+    """
 
 # instructions experimental block of punishment condition (excite the baby)
-INSTRUCTIONS_PUNISHMENT_EXP = """
+INSTRUCTIONS_PUNISHMENT_EXP = """INSTRUCTIONS:
     Over the fixation point will be presented a neutral baby face, 
     your task is to make the baby happy with one of the 2 toys available. 
     One of the two is more successful and it will make the baby being happy! 
-    the other might have no effect or even distress the baby!
-    use left and right arrow to select the toy you think is better and  try to make the baby as much as possible!
+    The other might have no effect or even distress the baby!
+    Use left and right arrows to select the toy you think is better and try to make the baby as much as possible!
     Pay attention, the good toy may change!
 
     Good luck!
@@ -151,6 +164,7 @@ INSTRUCTIONS_PUNISHMENT_EXP = """
     Press 'space' bar to begin.
     """
 
+#starting_screen_experimental
 
 def bandit_task_experimental (selected_value, arms, stimuli, feedback, window):
     # define instructions
@@ -187,17 +201,28 @@ def bandit_task_experimental (selected_value, arms, stimuli, feedback, window):
     # screen experiments
     print('starting screen is %d' % selected_value)
     starting_screen_experimental = ""
-    if selected_value == 1 
-        starting_screen, is_reward = 
+    if selected_value > 0:
+        starting_screen, is_reward = get_starting_screen_experimental (([fixation_cross, True],[arms, True]))
         print('display fixation cross and arms')
-        while clock.getTime() < 2.0:
+        while clock.getTime() < 1000:
+            toy1.draw()
+            toy2.draw()
             fixation_cross.draw()
-            win.flip()
-            core.wait(2.0)
-        while clock.getTime() > 2.0 and cond_num == 1:
-            toy1.draw() and toy2.draw() and sadface.draw()
-        while clock.getTime > 2.0 and cond_num == 2:
-            toy1.draw() and toy2.draw() and neutralface.draw()
+            #text_rule_FixationCross = psychopy.visual.TextStim(
+        #win=window,
+        #text=text_rule_FixationCross,
+        #color=(-1, -1, -1), height=30.0)
+    #text_rule_FixationCross.draw(window)
+    win.flip()
+    core.wait(1000)
+    while clock.getTime() > 1000 and selected_value == 1:  #baseline screen experimental reward condition
+            toy1.draw()
+            toy2.draw()
+            sadface.draw()
+    while clock.getTime > 1000 and selected_value == 2:  #baseline screen experimental punishment condition 
+            toy1.draw()
+            toy2.draw() 
+            neutralface.draw()
             while True:
                 print('in while...')
                 response = psychopy.event.waitKeys(keyList=['left', 'right'])
