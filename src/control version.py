@@ -486,7 +486,7 @@ trials.finished = True
 # Pause for a break every 100 trials
 if trials.thisN % 100 != 0:  # this isn't trial number 100, 200, 300...
     continueRoutine = False  # so don't run the pause routine this time.
-
+win.flip()
 # break screen
 text_rule = "The first part has been completed! Take some time to rest and press the'SPACE' bar when you are ready to proceed."
 text_stim_screen = psychopy.visual.TextStim(
@@ -513,11 +513,11 @@ while True:
 
 # win.close()
 
-# link to xlsx file
 
-# position []
-# answer=xlrd.open_workbook(r'answer.xlsx')
-# sheet=answer.sheet_by_index(0)
+# link to xlsx file
+#position []
+#answer=xlrd.open_workbook(r'answer_contr.xlsx')
+#sheet=answer.sheet_by_index(0)
 
 # save data in excel with labels
 
