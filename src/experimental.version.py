@@ -103,8 +103,20 @@ sadface = psychopy.visual.ImageStim(win=win, image="babyneg2.png", color=(1.0, 1
 #    color=(-1, -1, -1), pos=[0, 200])
 #win.flip()
 
-fixation_cross = visual.GratingStim(win, color=-1, colorSpace='rgb',
-                              tex=None, mask='circle', size=0.2)
+#fixation_cross = visual.GratingStim(win, color=-1, colorSpace='rgb',
+#                              tex=None, mask='circle', size=0.2)
+
+
+# fixation cross
+fixation_cross = visual.ShapeStim(win, 
+    vertices=((0, -2.5), (0, 2.5), (0,0), (-2.5,0), (2.5, 0)),
+    lineWidth=20,
+    closeShape=False,
+    lineColor="black"
+)
+fixation_cross.draw()
+core.wait(1000)
+win.flip()
 
 # def gender
 
@@ -448,8 +460,7 @@ while True:
     print(response)
     if 'space' in response:
         break  # break out of the while-loop
-'''
-'''
+
 while True:
     print('in while...')
     response = psychopy.event.waitKeys()  # you probably have event.waitKeys(keyList=['space']) or something like that right now
@@ -463,8 +474,6 @@ while True:
         right = True
         left = False
         break  # break out of the while-loop
-
-
 
 
 for trial in range(10):  # 10 trails now, how many do we want?
@@ -531,9 +540,9 @@ while True:
 
 # link to xlsx file
 
-# position []
-# answer=xlrd.open_workbook(r'answer.xlsx')
-# sheet=answer.sheet_by_index(0)
+#position []
+#answer=xlrd.open_workbook(r'answer_exp.xlsx')
+#sheet=answer.sheet_by_index(0)
 
 # save data in excel with labels
 
