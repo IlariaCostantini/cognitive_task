@@ -1,3 +1,7 @@
+# Multi-armed bandit task, control condition. We use pounds as images and gratings as arms.
+# Author: Ilaria Costantini
+# Last version: 27/02/2019
+
 from __future__ import absolute_import, division
 
 import pprint
@@ -135,14 +139,30 @@ def get_instructions (instruction_list):
         print(result[0], [1])
         return result[0], result[1]
 
+
+starting_screen_list = {"fixation_cross": ('fixation_cross'), "arms": ('gratings_h','gratings_v')}
+
 def get_starting_screen_control (starting_screen_list):
         result = (starting_screen_list)
         print(result[0], [1])
         return result[0], result[1]
 
+baseline_screen_rew_list = {"text_rule_minusone": ('-1£'), "arms": ('gratings_h','gratings_v')}
 
-#starting_screen_list = {"text_rule_FixationCross": '+', "arms": ('toy1','toy2')}
-starting_screen_list = {"text_rule_FixationCross": ('fixation_cross'), "arms": ('gratings_h','gratings_v')}
+def get_baseline_screen_cont_reward (baseline_screen_rew_list):
+        result = (baseline_screen_rew_list)
+        print(result[0],[1])
+        return result[0], result[1]
+
+baseline_screen_pun_list = {"text_rule_zero": ('0£'), "arms": ('gratings_h','gratings_v')}
+arms = (gratings_h),(gratings_v)
+
+def get_baseline_screen_cont_punishment (baseline_screen_pun_list):
+        result = (baseline_screen_pun_list)
+        print(result[0],[1])
+        return result[0], result[1]
+
+
 
 # instructions control block of reward condition (earn money)
 INSTRUCTIONS_REWARD_CONTR = """INSTRUCTIONS:
@@ -205,18 +225,41 @@ def bandit_task_control (selected_value, arms, stimuli, feedback, window):
             print("selected space!")
             break  # break out of the while-loop
 
-# starting screen
-    # screen experiments
-    print('starting screen is %d' % selected_value)
+
+
+# screen experiments
+
+    print('selected_value is %d' % selected_value)
     starting_screen_control = ""
     if selected_value > 0:
-        starting_screen, is_reward = get_starting_screen_control (([fixation_cross, True],[arms, True]))
+        starting_screen = get_starting_screen_control (([fixation_cross, True],[arms, True]))
         print('display fixation cross and arms')
-        while clock.getTime() < 1000:
-            gratings_h.draw()
-            gratings_v.draw()
-            fixation_cross.draw()
+        core.wait(0.5)
+    print ('starting_screen_control is %s' % (starting_screen_control))
+   # starting_screen_control.draw(window)
+    win.flip()
 
+    baseline_screen = ""
+    if selected_value == 1 and clock.getTime() > 0.5:  # baseline screen control reward condition
+        baseline_screen, is_reward = get_baseline_screen_cont_reward (([text_rule_minusone, True],[arms, True]))
+
+    if selected_value == 2 and clock.getTime() > 0.5:  # baseline screen control punishment condition 
+        baseline_screen, is_reward = get_baseline_screen_cont_punishment (([text_rule_zero, True], [arms, True]))
+
+    print ('baseline_screen is %s and is_reward=%s' % (baseline_screen, is_reward))
+   # baseline_screen.draw(window)
+    win.flip()
+
+    while True:
+        print('in while...')
+        response = psychopy.event.waitKeys(keyList=['left', 'right'])
+        print('after response')
+        print(response)
+        if 'left' in str(response):
+            print("left!")
+        elif 'right' in str(response):
+            print("right!")
+            break  # break out of the while-loop
 
 def control_trial(is_reward, s=None):
     print("start control with is_reward=%s..." % s)
@@ -253,53 +296,29 @@ is_reward = bandit_task_control (cond_num, None, None, None, win)
 exit(0)
 
 
-
-# dictionary of welcome, break and thanks across conditions
-messages = {
-    "welcome": "Welcome to our study. Thanks for taking part to this experiment! Press the'SPACE' bar to continue",
-    "break": "The first part has been completed! Take some time to rest and press the'SPACE' bar when you are ready to proceed.",
-    "thanks": "Congratulations, you have completed the experiment! Thank you for your participation! For any further question, do not hesitate to contact the reseachers."}
-if is_reward is False or is_reward is True and is_exp is True or is_exp is False:
-    print(messages["welcome"])
-    while True:
-        print('in while...')
-        response = psychopy.event.waitKeys(keyList=['space'])
-        print('response is %s', response)
-        print(response)
-        if 'space' in response:
-            break  # break out of the while-loop
-            print(messages["break"])
-            print(messages["thanks"])
-    win.flip()
-
 # Pause for a break every 100 trials
 
-#if trials.thisN % 100 != 0: # this isn't trial number 100, 200, 300...
+#if trials.thisN % 50 != 0: # this isn't trial number 50. 100, 150, 200
 #    continueRoutine = False
 #    return ("break")# so don't run the pause routine this time.
 
-#take_a_break = "The first part has been completed! Take some time to rest and press the'SPACE' bar when you are ready to proceed." #take a break screen
+# define take a break, equal across conditions
+
+print ('take a break')
+take_a_break = "you are half way the first part! Take some time to rest and press the'SPACE' bar when you are ready to proceed."
 text_stim_screen = psychopy.visual.TextStim(
     win=win,
     text=take_a_break,
     color=(-1, -1, -1), height=30.0)
+text_stim_screen.draw(win)
+win.flip()
 while True:
     print('in while...')
     response = psychopy.event.waitKeys(keyList=['space'])
-    print('after response')
+    print('response is %s', response)
     print(response)
     if 'space' in response:
         break  # break out of the while-loop
-
-# Thanks screen common across conditions
-#if trials.thisN % 200 != 0:
-#        continueRoutine = False
-#        return "thanks"
-#thanks_message = "Congratulations, you have completed the experiment! Thank you for your participation! For any further question, do not hesitate to contact the reseachers." #thanks screen
-text_stim_screen = psychopy.visual.TextStim(
-    win=win,
-    text=thanks_message,
-    color=(-1, -1, -1), height=30.0)
 
 # Ensure that relative paths start from the same directory as this script
 _thisDir = os.path.dirname(os.path.abspath(__file__))
@@ -373,15 +392,7 @@ logging.console.setLevel(logging.WARNING)  # this outputs to the screen, not a f
 
 # endExpNow = False  # flag for 'escape' or other condition => quit the exp
 
-
-# background and images size settings  all conditions
-print('draw image')
-
-
-# arms settings control condition
-
 trialClock = core.Clock()
-
 
 # add functions for probabilities underlying successul feedback.
 
@@ -402,11 +413,7 @@ clock = psychopy.core.Clock()
 n_trials = 200
 pre_duration_s = 0.5  # wait before sghowing the stimuli 500 ms
 stim_duration_s = 3
-
-
-
-# define function for the task
-
+ 
 
 # cleaning up, closing the window and experiment
 
@@ -414,28 +421,6 @@ win.close()
 core.quit()
 
 
-# break screen
-
-text_rule_break = """
-    The first part has been completed! Take some time to rest and press the'SPACE' bar when you are ready to proceed.
-    """
-text_stim_screen = psychopy.visual.TextStim(
-    win=win,
-    text=text_rule_break,
-    color=(-1, -1, -1), height=30.0)
-
-text_stim_screen.draw(win)
-win.flip()
-
-while True:
-    print('in while...')
-    response = psychopy.event.waitKeys(keyList=['space'])
-    print('after response')
-    print(response)
-    if 'space' in response:
-        break  # break out of the while-loop
-'''
-'''
 while True:
     print('in while...')
     response = psychopy.event.waitKeys()  # you probably have event.waitKeys(keyList=['space']) or something like that right now
@@ -487,22 +472,17 @@ trials.finished = True
 if trials.thisN % 100 != 0:  # this isn't trial number 100, 200, 300...
     continueRoutine = False  # so don't run the pause routine this time.
 win.flip()
-# break screen
-text_rule = "The first part has been completed! Take some time to rest and press the'SPACE' bar when you are ready to proceed."
-text_stim_screen = psychopy.visual.TextStim(
+
+# Thanks screen common across conditions
+
+print('thanks')
+thanks= "Congratulations, you have completed the control session! Pass to the experimental session, ask the experimenter :)"
+text_stim_screen=psychopy.visual.TextStim(
     win=win,
-    text=text_rule,
-    color=(-1, -1, -1), height=30.0)
-
-while True:
-    print('in while...')
-    response = psychopy.event.waitKeys(keyList=['space'])
-    print('after response')
-    print(response)
-    if 'space' in response:
-        win.flip()
-        # break  #break out of the while-loop
-
+    text=thanks,
+    color=(-1,-1,-1), height=30.0)
+text_stim_screen.draw(win)
+win.close()
 
 # psychopy.event.waitKeys()
 # clock = psychopy.core.Clock()
@@ -521,15 +501,6 @@ while True:
 
 # save data in excel with labels
 
-# Thanks screen common across conditions
-
-text_rule_thanks= """
-Congratulations, you have completed the experiment! Thank you for your participation! For any further question, do not hesitate to contact the reseachers.
- """
-text_stim_screen=psychopy.visual.TextStim(
-win=win,
-text=text_rule_thanks,
-color=(-1,-1,-1), height=30.0)
 
 # cleaning up, closing the window and experiment
 
