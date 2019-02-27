@@ -1,3 +1,8 @@
+# Multi-armed bandit task, experimental condition. We use infant stimuli as images and toys as arms.
+# Author: Ilaria Costantini
+# Last version: 27/02/2019
+
+
 # coding=utf-8
 from __future__ import absolute_import, division
 
@@ -72,7 +77,7 @@ facesad_size = [150, 200]
 facehappy_size = [150, 200]
 faceneutral_size = [150, 200]
 screen_size = [1000, 1000]
-#fixationcross_size = [70, 70]
+fixationcross_size = [70, 70]
 
 # Setup the Window
 
@@ -94,7 +99,7 @@ toy2 = psychopy.visual.ImageStim(win=win, image="toy2_duck.png", color=(1.0, 1.0
 happyface = psychopy.visual.ImageStim(win=win, image="babyhappy2.png", color=(1.0, 1.0, 1.0), size=facehappy_size, units='pix', pos=[0, 200])
 neutralface = psychopy.visual.ImageStim(win=win, image="babyneutral2.png", color=(1.0, 1.0, 1.0), size=faceneutral_size, units='pix', pos=[0, 200])
 sadface = psychopy.visual.ImageStim(win=win, image="babyneg2.png", color=(1.0, 1.0, 1.0), size=facesad_size, units='pix', pos=[0, 200])
-#fixation_cross = psychopy.visual.ImageStim(win=win, image="fixation_cross.png", color=(-1.0, -1.0, -1.0), size=fixationcross_size, units='pix', pos=[0, 200])
+fixation_cross = psychopy.visual.ImageStim(win=win, image="fixation_cross.png", color=(-1.0, -1.0, -1.0), size=fixationcross_size, units='pix', pos=[0, 200])
 
 #text_rule_FixationCross = "+"
 #text_stim_screen = psychopy.visual.TextStim(
@@ -114,9 +119,9 @@ fixation_cross = visual.ShapeStim(win,
     closeShape=False,
     lineColor="black"
 )
-fixation_cross.draw()
-core.wait(1000)
-win.flip()
+#fixation_cross.draw()
+#core.wait(1000)
+#win.flip()
 
 # def gender
 
@@ -144,9 +149,23 @@ def get_starting_screen_experimental (starting_screen_list):
         print(result[0], [1])
         return result[0], result[1]
 
+starting_screen_list = {"fixation_cross": ('fixation_cross'), "arms": ('toy1','toy2')}
 
-#starting_screen_list = {"text_rule_FixationCross": '+', "arms": ('toy1','toy2')}
-starting_screen_list = {"text_rule_FixationCross": ('fixation_cross'), "arms": ('toy1','toy2')}
+
+def get_baseline_screen_expt_reward (baseline_screen_rew_list):
+        result = (baseline_screen_rew_list)
+        print(result[0],[1])
+        return result[0], result[1]
+
+baseline_screen_rew_list = {"sadface": ('sadface'), "arms": ('toy1','toy2')}
+
+def get_baseline_screen_expt_punishment (baseline_screen_pun_list):
+        result = (baseline_screen_pun_list)
+        print(result[0],[1])
+        return result[0], result[1]
+
+baseline_screen_pun_list = {"neuface": ('neutralface'), "arms": ('toy1','toy2')}
+
 
 # instructions experimental block of reward condition (earn money)
 INSTRUCTIONS_REWARD_EXP = """INSTRUCTIONS:
@@ -209,42 +228,38 @@ def bandit_task_experimental (selected_value, arms, stimuli, feedback, window):
             print("selected space!")
             break  # break out of the while-loop
 
-# starting screen
-    # screen experiments
-    print('starting screen is %d' % selected_value)
+
+# screen experiments
+
+    print('selected_value is %d' % selected_value)
     starting_screen_experimental = ""
     if selected_value > 0:
-        starting_screen, is_reward = get_starting_screen_experimental (([fixation_cross, True],[arms, True]))
+        starting_screen = get_starting_screen_experimental (([fixation_cross, True],[arms, True]))
         print('display fixation cross and arms')
-        while clock.getTime() < 1000:
-            toy1.draw()
-            toy2.draw()
-            fixation_cross.draw()
-            #text_rule_FixationCross = psychopy.visual.TextStim(
-        #win=window,
-        #text=text_rule_FixationCross,
-        #color=(-1, -1, -1), height=30.0)
-    #text_rule_FixationCross.draw(window)
-    win.flip()
-    core.wait(1000)
-    while clock.getTime() > 1000 and selected_value == 1:  #baseline screen experimental reward condition
-            toy1.draw()
-            toy2.draw()
-            sadface.draw()
-    while clock.getTime > 1000 and selected_value == 2:  #baseline screen experimental punishment condition 
-            toy1.draw()
-            toy2.draw() 
-            neutralface.draw()
-            while True:
-                print('in while...')
-                response = psychopy.event.waitKeys(keyList=['left', 'right'])
-                print('after response')
-                print(response)
-                if 'left' in str(response):
-                    print("left!")
-                elif 'right' in str(response):
-                    print("right!")
-                    break  # break out of the while-loop
+        core.wait(0.5)
+    print ('starting_screen_experimental is %s' % (starting_screen_experimental))
+
+
+    baseline_screen = ""
+    if selected_value == 1 and clock.getTime() > 0.5:  # baseline screen experimental reward condition
+        baseline_screen, is_reward = get_baseline_screen_expt_reward (([sadface, True],[arms, True]))
+
+    if selected_value == 2 and clock.getTime() > 0.5:  # baseline screen experimental punishment condition 
+        baseline_screen, is_reward = get_baseline_screen_expt_punishment (([neuface, True], [arms, True]))
+
+    print ('baseline_screen is %s and is_reward=%s' % (baseline_screen, is_reward))
+
+
+    while True:
+        print('in while...')
+        response = psychopy.event.waitKeys(keyList=['left', 'right'])
+        print('after response')
+        print(response)
+        if 'left' in str(response):
+            print("left!")
+        elif 'right' in str(response):
+            print("right!")
+            break  # break out of the while-loop
                     
 def experiment_trial(is_reward, s=None):
     print("start experiment trial with is_reward=%s..." % s)
@@ -280,52 +295,29 @@ is_reward = bandit_task_experimental (cond_num, None, None, None, win)
 
 exit(0)
 
-# dictionary of welcome, break and thanks across conditions
-messages = {
-    "welcome": "Welcome to our study. Thanks for taking part to this experiment! Press the'SPACE' bar to continue",
-    "break": "The first part has been completed! Take some time to rest and press the'SPACE' bar when you are ready to proceed.",
-    "thanks": "Congratulations, you have completed the experiment! Thank you for your participation! For any further question, do not hesitate to contact the reseachers."}
-if is_reward is False or is_reward is True:
-    print(messages["welcome"])
-    while True:
-        print('in while...')
-        response = psychopy.event.waitKeys(keyList=['space'])
-        print('response is %s', response)
-        print(response)
-        if 'space' in response:
-            break  # break out of the while-loop
-            print(messages["break"])
-            print(messages["thanks"])
-    win.flip()
-
 # Pause for a break every 100 trials
 
-#if trials.thisN % 100 != 0: # this isn't trial number 100, 200, 300...
-#    continueRoutine = False
-#    return ("break")# so don't run the pause routine this time.
+if trials.thisN % 50 != 0: # this isn't trial number 50, 100, 150, 200...
+    continueRoutine = False
+    #print("take_a_break")# so don't run the pause routine this time.
 
-#take_a_break = "The first part has been completed! Take some time to rest and press the'SPACE' bar when you are ready to proceed." #take a break screen
+# define take a break, equal across conditions
+
+print ('take a break')
+take_a_break = "you are half way the first part! Take some time to rest and press the'SPACE' bar when you are ready to proceed."
 text_stim_screen = psychopy.visual.TextStim(
     win=win,
     text=take_a_break,
     color=(-1, -1, -1), height=30.0)
+text_stim_screen.draw(win)
+win.flip()
 while True:
     print('in while...')
     response = psychopy.event.waitKeys(keyList=['space'])
-    print('after response')
+    print('response is %s', response)
     print(response)
     if 'space' in response:
         break  # break out of the while-loop
-
-# Thanks screen common across conditions
-#if trials.thisN % 200 != 0:
-#        continueRoutine = False
-#        return "thanks"
-#thanks_message = "Congratulations, you have completed the experiment! Thank you for your participation! For any further question, do not hesitate to contact the reseachers." #thanks screen
-text_stim_screen = psychopy.visual.TextStim(
-    win=win,
-    text=thanks_message,
-    color=(-1, -1, -1), height=30.0)
 
 # Ensure that relative paths start from the same directory as this script
 _thisDir = os.path.dirname(os.path.abspath(__file__))
@@ -347,7 +339,7 @@ psychopy.event.waitKeys()
 
 keys = psychopy.event.getKeys(
     keyList=["left", "right"],
-    timeStamped=clock
+    timeStamped=clock 
 )
 
 for key in keys:
@@ -440,27 +432,6 @@ win.close()
 core.quit()
 
 
-# break screen
-
-text_rule_break = """
-    The first part has been completed! Take some time to rest and press the'SPACE' bar when you are ready to proceed.
-    """
-text_stim_screen = psychopy.visual.TextStim(
-    win=win,
-    text=text_rule_break,
-    color=(-1, -1, -1), height=30.0)
-
-text_stim_screen.draw(win)
-win.flip()
-
-while True:
-    print('in while...')
-    response = psychopy.event.waitKeys(keyList=['space'])
-    print('after response')
-    print(response)
-    if 'space' in response:
-        break  # break out of the while-loop
-
 while True:
     print('in while...')
     response = psychopy.event.waitKeys()  # you probably have event.waitKeys(keyList=['space']) or something like that right now
@@ -512,22 +483,6 @@ trials.finished = True
 if trials.thisN % 100 != 0:  # this isn't trial number 100, 200, 300...
     continueRoutine = False  # so don't run the pause routine this time.
 
-# break screen
-text_rule = "The first part has been completed! Take some time to rest and press the'SPACE' bar when you are ready to proceed."
-text_stim_screen = psychopy.visual.TextStim(
-    win=win,
-    text=text_rule,
-    color=(-1, -1, -1), height=30.0)
-
-while True:
-    print('in while...')
-    response = psychopy.event.waitKeys(keyList=['space'])
-    print('after response')
-    print(response)
-    if 'space' in response:
-        win.flip()
-        # break  #break out of the while-loop
-
 
 # psychopy.event.waitKeys()
 # clock = psychopy.core.Clock()
@@ -546,15 +501,19 @@ while True:
 
 # save data in excel with labels
 
-# Thanks screen common across conditions
 
-text_rule_thanks= """
-Congratulations, you have completed the experiment! Thank you for your participation! For any further question, do not hesitate to contact the reseachers.
- """
+# Thanks screen common across conditions
+if trials.thisN % 200 != 0:
+        continueRoutine = False
+        return "thanks"
+print('thanks')
+thanks= "Congratulations, you have completed the experimental session! Pass to the control session, ask the experimenter :)"
 text_stim_screen=psychopy.visual.TextStim(
-win=win,
-text=text_rule_thanks,
-color=(-1,-1,-1), height=30.0)
+    win=win,
+    text=thanks,
+    color=(-1,-1,-1), height=30.0)
+text_stim_screen.draw(win)
+win.close()
 
 # cleaning up, closing the window and experiment
 
