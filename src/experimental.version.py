@@ -44,98 +44,185 @@ SAVE_FOLDER = 'data' # Log is saved to this folder. The folder is created if it 
 #datafile= xlrd.open_workbook (r "C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\sensitivity_punishment_condition.xlsx")
 #workbook = xlrd.open_workbook(datafile)
 
+NUM_TRIALS = 200
+
+
+
+def init_elements_in_window():
+    print('setting screen size and images size ....')
+    window = init_window()
+    pos_right = [200, -200]
+    pos_left = [-200, -200]
+    toy_size = [200, 200]
+    face_size = [150, 200]
+    fixationcross_size = [70, 70]
+    rectangle_right = psychopy.visual.Rect(win=window, units="pix", width=toy_size[0] + 10, height=toy_size[1] + 10,
+                                           lineColor='green', colorSpace='rgb', pos=pos_right)
+    rectangle_left = psychopy.visual.Rect(win=window, units="pix", width=toy_size[0] + 10, height=toy_size[1] + 10,
+                                          lineColor='green', colorSpace='rgb', pos=pos_left)
+    toy_bear = psychopy.visual.ImageStim(win=window, image="toy1_bear.png", color=(1.0, 1.0, 1.0), size=toy_size,
+                                         units='pix',
+                                         pos=pos_right)
+    toy_duck = psychopy.visual.ImageStim(win=window, image="toy2_duck.png", color=(1.0, 1.0, 1.0), size=toy_size,
+                                         units='pix',
+                                         pos=pos_left)
+    happyface = psychopy.visual.ImageStim(win=window, image="babyhappy2.png", color=(1.0, 1.0, 1.0),
+                                          size=face_size,
+                                          units='pix', pos=[0, 200])
+    neutralface = psychopy.visual.ImageStim(win=window, image="babyneutral2.png", color=(1.0, 1.0, 1.0),
+                                            size=face_size,
+                                            units='pix', pos=[0, 200])
+    sadface = psychopy.visual.ImageStim(win=window, image="babyneg2.png", color=(1.0, 1.0, 1.0), size=face_size,
+                                        units='pix', pos=[0, 200])
+    fixation_cross = psychopy.visual.ImageStim(win=window, image="fixation_cross.png", color=(1.0, 1.0, 1.0),
+                                               size=fixationcross_size, units='pix', pos=[0, 200])
+
+    right_highlight = psychopy.visual.Rect(win=window, pos=pos_right, width=250, height=250, color=(0.0, 1.0, 0.0),
+                                           units='pix')
+
+    left_highlight = psychopy.visual.Rect(win=window, pos=pos_left, width=250, height=250, color=(0.0, 1.0, 0.0),
+                                          units='pix')
+
+    return window, rectangle_right, rectangle_left, toy_bear, toy_duck, happyface, neutralface, sadface, fixation_cross, right_highlight, left_highlight
+
+# Setup the Window
+
+def init_window():
+    screen_size = [1000, 1000]
+    window = psychopy.visual.Window(
+        units='pix',
+        size=screen_size,
+        fullscr=False,
+        # change in True when you run the actual experiment and change the screen size into the actual size of the screen of the pc you will use
+        color=[0, 0, 0])
+    return window
+
 # Participant info for everybody
 
-gui = psychopy.gui.Dlg()
-gui.addField("Participant Number:", "Ilaria")
-gui.addField("Condition Number:", 1)
-gui.addField("Age:", 22)
-gui.addField("Gender(m/f/o):", "f")
-gui.show()
+def show_dialog_and_get_info():
+    print("show_dialog...")
+    gui = psychopy.gui.Dlg()
+    gui.addField("Participant Number:", "Ilaria")
+    gui.addField("Condition Number:", 1)
+    gui.addField("Age:", 26)
+    gui.addField("Gender(m/f/o):", "f")
+    # this is a blocking function. as long as the participant has not clicked ok the code progression
+    # will be blocked here
+    gui.show()
+    participant_num = gui.data[0]
+    cond_num = int(gui.data[1])
+    age = int(gui.data[2])
+    gender = (gui.data[3])
+    return participant_number, cond_num, age, gender
 
-participant_num = (gui.data[0])
-cond_num = int(gui.data[1])
-age = int(gui.data[2])
-gender = (gui.data[3])
 
-print(gui.data[3])
+def get_random_instructions(instruction_list):
+    result = random.choice(instruction_list)
+    text = result[0]
+    id = result[1]
+    print("instruction text is %s. id is %s" % (text, id))
+    return text, id
+
+
+def get_instructions (instruction_list):
+        result = (instruction_list)
+        print(result[0], [1])
+        return result[0], result[1]
+
+instruction_list = {"soothe the baby": 'INSTRUCTIONS_REWARD_EXP', "excite the baby": 'INSTRUCTIONS_PUNISHMENT_EXP'}  #or use this? 
+
+def show_instructions_and_wait(window):
+    instruction_list = [(INSTRUCTIONS_REWARD_EXP, True), (INSTRUCTIONS_PUNISHMENT_EXP, False)]
+    instructions_text, is_reward = get_random_instructions(instruction_list)
+    text_stim = psychopy.visual.TextStim(
+        win=window,
+        text=instructions_text,
+        color=(-1, -1, -1), height=30.0)
+    text_stim.draw(window)
+    window.flip()
+    psychopy.event.waitKeys(keyList=['space'])
+    print("user pressed space -> go to next step !")
+    return is_reward
+
+
+def experiment_trial(is_reward, window, right_highlight, left_highlight, toy1, toy2, happy_face, neutral_face, sad_face):
+    print("start experiment trial with is_reward=%s..." % is_reward)
+    fixation_cross.draw(window)
+    window.flip()
+    core.wait(1)
+    print("waited 1 seconds.")
+    fixation_cross.draw(window)
+    window.flip()
+    core.wait(1)
+    # remove fixation cross
+    window.flip()
+    # right_highlight.draw(window)
+    toy1.draw(window)
+    toy2.draw(window)
+    window.flip()
+
+    response = psychopy.event.waitKeys(keyList=['left', 'right'])
+    print(response)
+    # highlight selected items
+    pressed_left = None
+    if 'left' in response:
+        pressed_left = True
+        left_highlight.draw(window)
+        toy2.draw(window)
+        toy1.draw(window)
+    if 'right' in response:
+        pressed_left = False
+        right_highlight.draw(window)
+        toy1.draw(window)
+        toy2.draw(window)
+    window.flip()
+
+    # decide what baby face to display to user
+    process_result_and_wait(window, happy_face, neutral_face, sad_face, pressed_left, left_highlight, right_highlight, toy1, toy2)
+
+
+def process_result_and_wait(window, happy_face, neutral_face, sad_face, pressed_left, left_highlight, right_highlight, toy1, toy2):
+    #redraw previous state
+    if pressed_left:
+        left_highlight.draw(window)
+        toy2.draw(window)
+        toy1.draw(window)
+    else:
+        right_highlight.draw(window)
+        toy1.draw(window)
+        toy2.draw(window)
+
+    #decide which baby face to display
+    random_id = randint(1, 3)
+    if random_id == 1:
+        happy_face.draw(window)
+    if random_id == 2:
+        neutral_face.draw(window)
+    if random_id == 3:
+        sad_face.draw(window)
+
+    window.flip()
+    core.wait(3)
+
 
 #fileName = V['condition_num'] +V['participant_num']+'['+ time.strftime('%Y%m%d-%H%M', time.localtime())+').tsv'
 
-
-
-
 # creating and checking file location
 
-data_path = participant_num + "_cond_" + str(cond_num) + "Age" + str(age) + ".tsv"
-print("data_path=", data_path)
+#data_path = "participant_number" + str(participant_num) + "_cond_" + str(cond_num) + "Age" + str(age) + ".tsv"
+#print("data_path=", data_path)
 
 # time and clocks
 
 clock = psychopy.core.Clock()
 
-if os.path.exists(data_path):
-    sys.exit("Data path" + data_path + "already exists!")
+#if os.path.exists(data_path):
+#    sys.exit("Data path" + data_path + "already exists!")
 
-responses = []
-
-# setting screen size and images size
-
-print('setting screen size and images size ....')
-toy1_size = [200, 200]
-toy2_size = [200, 200]
-facesad_size = [150, 200]
-facehappy_size = [150, 200]
-faceneutral_size = [150, 200]
-screen_size = [1000, 1000]
-fixationcross_size = [70, 70]
-
-# Setup the Window
-
-win = psychopy.visual.Window(
-    units='pix',
-    size=screen_size,
-    fullscr=False, # change in True when you run the actual experiment and change the screen size into the actual size of the screen of the pc you will use
-    color=[0, 0, 0])
-
-print('setting win...')
-
-print('loading images...')
-pos1 = [200, -200]
-pos2 = [-200, -200]
-rectangle_YourChoiceR = psychopy.visual.Rect(win=win, units="pix", width=toy1_size[0] + 10, height=toy1_size[1] + 10,lineColor='green', colorSpace='rgb', pos=pos1)
-rectangle_YourChoiceL = psychopy.visual.Rect(win=win, units="pix", width=toy2_size[0] + 10, height=toy2_size[1] + 10,lineColor='green', colorSpace='rgb', pos=pos2)
-toy1 = psychopy.visual.ImageStim(win=win, image="toy1_bear.png", color=(1.0, 1.0, 1.0), size=toy1_size, units='pix', pos=pos1)  # type: ImageStim
-toy2 = psychopy.visual.ImageStim(win=win, image="toy2_duck.png", color=(1.0, 1.0, 1.0), size=toy2_size, units='pix', pos=pos2)
-happyface = psychopy.visual.ImageStim(win=win, image="babyhappy2.png", color=(1.0, 1.0, 1.0), size=facehappy_size, units='pix', pos=[0, 200])
-neutralface = psychopy.visual.ImageStim(win=win, image="babyneutral2.png", color=(1.0, 1.0, 1.0), size=faceneutral_size, units='pix', pos=[0, 200])
-sadface = psychopy.visual.ImageStim(win=win, image="babyneg2.png", color=(1.0, 1.0, 1.0), size=facesad_size, units='pix', pos=[0, 200])
-fixation_cross = psychopy.visual.ImageStim(win=win, image="fixation_cross.png", color=(-1.0, -1.0, -1.0), size=fixationcross_size, units='pix', pos=[0, 200])
-
-#text_rule_FixationCross = "+"
-#text_stim_screen = psychopy.visual.TextStim(
-#    win=win,
-#    text=text_rule_FixationCross,
-#    color=(-1, -1, -1), pos=[0, 200])
-#win.flip()
-
-#fixation_cross = visual.GratingStim(win, color=-1, colorSpace='rgb',
-#                              tex=None, mask='circle', size=0.2)
-
-
-# fixation cross
-fixation_cross = visual.ShapeStim(win, 
-    vertices=((0, -2.5), (0, 2.5), (0,0), (-2.5,0), (2.5, 0)),
-    lineWidth=20,
-    closeShape=False,
-    lineColor="black"
-)
-#fixation_cross.draw()
-#core.wait(1000)
-#win.flip()
+#responses = []
 
 # def gender
-
+'''
 print('define gender')
 if gender == "m":
     print("You chose male")
@@ -145,16 +232,7 @@ elif gender == "o":
     print("You chose other")
 else:
     sys.exit("Unknown gender")
-
-
-
-def get_instructions (instruction_list):
-        result = (instruction_list)
-        print(result[0], [1])
-        return result[0], result[1]
-
-instruction_list = {"soothe the baby": 'INSTRUCTIONS_REWARD_EXP', "excite the baby": 'INSTRUCTIONS_PUNISHMENT_EXP'}
-
+'''
 
 def get_starting_screen_experimental (starting_screen_list):
         result = (starting_screen_list)
@@ -207,6 +285,9 @@ INSTRUCTIONS_PUNISHMENT_EXP = """INSTRUCTIONS:
     Press 'space' bar to begin.
     """
 
+
+
+'''
 # setting
 payoffMean = ['payoffMean']
 #rounds 
@@ -262,16 +343,20 @@ def feedback(trial):
     """
     we will give feedback to participants
     """
-    # extract gain from participant's selection 
+# extract gain from participant's selection 
 
     if trial['response'] == 'left':
-        choice = u'left'
-        if ['cond_num'] in {'1', '2'}:
-            payoff = trial['payofftoy1']
+        choice = u 'left'
+        if ['cond_num'] in {'1'}:
+            payoff = trial['payoffsucc']
         else:
-            payoff = trial['payofftoy2']
-
-
+            payoff = trial['payofftunsucc']
+    elif trial['response'] == 'right':
+        choice = u 'right'
+        if ['cond_num'] in {'1'}:
+            payoff = trial['payoffsucc']
+        else:
+            payoff = trial['payofftunsucc']
 
 # the correct answer
 if ['cond_num'] == '1':
@@ -294,7 +379,7 @@ elif ['condi_num'] == '2':
     correctAns += ['left' for i in rounds[125:140]]
     correctAns += ['right' for i in rounds[140:162]]
     correctAns += ['left' for i in rounds[162:len(rounds)]]
- 
+'''
 
 #starting_screen_experimental
 
@@ -379,7 +464,7 @@ print("start...")
 print ('welcome screen...')
 Welcome = "Welcome to our study. Thanks for taking part to this experiment! Press the'SPACE' bar to continue"
 text_stim_screen = psychopy.visual.TextStim(
-    win=win,
+    window=window,
     text=Welcome,
     color=(-1, -1, -1), height=30.0)
 text_stim_screen.draw(win)
@@ -474,7 +559,7 @@ print("expInfo", expInfo)
 # make a text file to save data
 fileName = expInfo['participant'] + expInfo['condition'] + expInfo['age'] + expInfo['gender']
 dataFile = open(fileName + '.csv', 'w')  # a simple text file with 'comma-separated-values'
-dataFile.write('Participant_num, cond_num, is_exp, trial, choice, ReactionTime, leftOutcome, rightoutcome, leftProbability, rightProbability, correct\n')  # add info you want to store
+dataFile.write('Participant_num, cond_num, is_exp, trial, choice, ReactionTime, leftoutcome, rightoutcome, leftProbability, rightProbability, correct\n')  # add info you want to store
 dataFile.write("%i, %i, %s, %i, %i, %i, %i, %i, %i, %i, %i" % ())
 
 # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
@@ -513,7 +598,7 @@ trialClock = core.Clock()
 # trials
 
 clock = psychopy.core.Clock()
-n_trials = 200
+trials = 200
 pre_duration_s = 0.5  # wait before sghowing the stimuli 500 ms
 stim_duration_s = 3
 
@@ -577,9 +662,9 @@ if trials.thisN % 100 != 0:  # this isn't trial number 100, 200, 300...
 
 # record data
 
-recordData = '\t\t\t'+str(trial['condition_num']) + '\t' + str(trial['participant_num']) +'\t'+ str(trial['meanPayoff']) +'\t' + str(trial['payofftoy1']) +'\t' = str(trial['payofftoy2']) +'\t'+str\
-(trial['correctAns']) +'\t'+ str(trial['response']) +'\t'+str(trial['correctCount']) +'\t'+'\t'+str(trial['payoff']) +'\t'+str(cumulativePayoff) +'\t'+ str(totalScore) 
-controller.recordEvent(recordData) 
+#recordData = '\t\t\t'+str(trial['condition_num']) + '\t' + str(trial['participant_num']) +'\t'+ str(trial['meanPayoff']) +'\t' + str(trial['payofftoy1']) +'\t' = str(trial['payofftoy2']) +'\t'+str\
+#(trial['correctAns']) +'\t'+ str(trial['response']) +'\t'+str(trial['correctCount']) +'\t'+'\t'+str(trial['payoff']) +'\t'+str(cumulativePayoff) +'\t'+ str(totalScore) 
+#controller.recordEvent(recordData) 
 
 # psychopy.event.waitKeys()
 # clock = psychopy.core.Clock()
@@ -621,6 +706,19 @@ win.close()
 def main():
     print("python main function")
 
+    if __name__ == "__main__":
+        print("start experiment...")
+        participant_number, cond_num, age, gender = show_dialog_and_get_info()
+        print("participant name is %s, cond_num is %d, age is %d, gender is %s."
+            % (participant_number, cond_num, age, gender))
 
-if __name__ == '__main__':
-    main()
+        window, rectangle_right, rectangle_left, toy_bear, toy_duck, happy_face, neutral_face, sad_face, fixation_cross, right_highlight, left_highlight = init_elements_in_window()
+        print("windows elements are ready for use.")
+
+        is_reward = show_instructions_and_wait(window)
+
+        cpt_iteration = 0
+        while True:
+            experiment_trial(is_reward, window, right_highlight, left_highlight, toy_bear, toy_duck, happy_face, neutral_face, sad_face)
+            cpt_iteration += 1
+            print("%d experiment trials has been performed." % cpt_iteration)
