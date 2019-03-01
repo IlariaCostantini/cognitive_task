@@ -207,6 +207,99 @@ INSTRUCTIONS_PUNISHMENT_EXP = """INSTRUCTIONS:
     Press 'space' bar to begin.
     """
 
+# setting
+payoffMean = ['payoffMean']
+#rounds 
+rounds = range (['round'])
+
+# Payoffs 
+payofftoy1 = [random.gauss(payoffMean, payoffSD) for i in rounds] # BOX_1 the gain sequence 
+if V['cond_num'] == '1':
+    payofftoy1 = [random.gauss(payoffMean+14, payoffSD) for i in rounds[0:30]]
+    payofftoy1 += [random.gauss(payoffMean-14, payoffSD) for i in rounds[30:45]]
+    payofftoy1 += [random.gauss(payoffMean+14, payoffSD) for i in rounds[45:63]]
+    payofftoy1 += [random.gauss(payoffMean+7, payoffSD) for i in rounds[63:86]]
+    payofftoy1 += [random.gauss(payoffMean-14, payoffSD) for i in rounds[86:100]]
+    payofftoy1 += [random.gauss(payoffMean-7, payoffSD) for i in rounds[100:125]]
+    payofftoy1 += [random.gauss(payoffMean+7, payoffSD) for i in rounds[125:140]]
+    payofftoy1 += [random.gauss(payoffMean-7, payoffSD) for i in rounds[140:162]]
+    payofftoy1 += [random.gauss(payoffMean+7, payoffSD) for i in rounds[162:len(rounds)]]
+elif ['cond_num'] == '2':
+    payofftoy2 = [random.gauss(payoffMean-14, payoffSD) for i in rounds[0:30]]
+    payofftoy2 += [random.gauss(payoffMean+14, payoffSD) for i in rounds[30:45]]
+    payofftoy2 += [random.gauss(payoffMean-14, payoffSD) for i in rounds[45:63]]
+    payofftoy2 += [random.gauss(payoffMean-7, payoffSD) for i in rounds[63:86]]
+    payofftoy2 += [random.gauss(payoffMean+14, payoffSD) for i in rounds[86:100]]
+    payofftoy2 += [random.gauss(payoffMean+7, payoffSD) for i in rounds[100:125]]
+    payofftoy2 += [random.gauss(payoffMean-7, payoffSD) for i in rounds[125:140]]
+    payofftoy2 += [random.gauss(payoffMean+7, payoffSD) for i in rounds[140:162]]
+    payofftoy2 += [random.gauss(payoffMean-7, payoffSD) for i in rounds[162:len(rounds)]]
+else:
+    payofftoy2 = [0 for i in rounds] # to check
+
+
+# Stimuli positions
+if ['cond_num'] == '1' or ['cond_num'] == '2':
+    # successful is LEFT and unsuccessful is RIGHT
+    toy1 = psychopy.visual.ImageStim(win=win, image="toy1_bear.png", color=(1.0, 1.0, 1.0), size=toy1_size, units='pix', pos=pos1)  # type: ImageStim
+    toy2 = psychopy.visual.ImageStim(win=win, image="toy2_duck.png", color=(1.0, 1.0, 1.0), size=toy2_size, units='pix', pos=pos2)
+
+
+# the correct answer
+
+if ['cond_num'] == '1' or ['cond-num'] == '2':
+    correctAns = ['right' for i in rounds[0:30]]
+    correctAns += ['left' for i in rounds[30:45]]
+    correctAns += ['right' for i in rounds[45:63]]
+    correctAns += ['right' for i in rounds[63:86]]
+    correctAns += ['left' for i in rounds[86:100]]
+    correctAns += ['left' for i in rounds[100:125]]
+    correctAns += ['right' for i in rounds[125:140]]
+    correctAns += ['left' for i in rounds[140:162]]
+    correctAns += ['right' for i in rounds[162:len(rounds)]]
+
+def feedback(trial):
+    """
+    we will give feedback to participants
+    """
+    # extract gain from participant's selection 
+
+    if trial['response'] == 'left':
+        choice = u'left'
+        if ['cond_num'] in {'1', '2'}:
+            payoff = trial['payoffsucc']
+        else:
+            payoff = trial['payoffunsucc']
+    else:
+        choice = u'right'
+        if ['cond_num'] in {'1', '2'}:
+            payoff = trial['payoffsucc']
+        else:
+            payoff = trial['payoffunsucc']
+
+
+# the correct answer
+if ['cond_num'] == '1':
+    correctAns = ['right' for i in rounds[0:30]]
+    correctAns += ['left' for i in rounds[30:45]]
+    correctAns += ['right' for i in rounds[45:63]]
+    correctAns += ['right' for i in rounds[63:86]]
+    correctAns += ['left' for i in rounds[86:100]]
+    correctAns += ['left' for i in rounds[100:125]]
+    correctAns += ['right' for i in rounds[125:140]]
+    correctAns += ['left' for i in rounds[140:162]]
+    correctAns += ['right' for i in rounds[162:len(rounds)]]
+elif ['condi_num'] == '2':
+    correctAns = ['left' for i in rounds[0:30]]
+    correctAns += ['right' for i in rounds[30:45]]
+    correctAns += ['left' for i in rounds[45:63]]
+    correctAns += ['left' for i in rounds[63:86]]
+    correctAns += ['right' for i in rounds[86:100]]
+    correctAns += ['right' for i in rounds[100:125]]
+    correctAns += ['left' for i in rounds[125:140]]
+    correctAns += ['right' for i in rounds[140:162]]
+    correctAns += ['left' for i in rounds[162:len(rounds)]]
+ 
 
 #starting_screen_experimental
 
@@ -256,9 +349,11 @@ def bandit_task_experimental (selected_value, arms, stimuli, feedback, window):
     baseline_screen = ""
     if selected_value == 1 and clock.getTime() > 0.5:  # baseline screen experimental reward condition
         baseline_screen, is_reward = get_baseline_screen_expt_reward (([sadface, True],[arms, True]))
+        print(get_baseline_screen_expt_reward)
 
     if selected_value == 2 and clock.getTime() > 0.5:  # baseline screen experimental punishment condition 
         baseline_screen, is_reward = get_baseline_screen_expt_punishment (([neuface, True], [arms, True]))
+        print(get_baseline_screen_expt_punishment)
 
     print ('baseline_screen is %s and is_reward=%s' % (baseline_screen, is_reward))
 
