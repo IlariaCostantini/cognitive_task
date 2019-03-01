@@ -111,8 +111,8 @@ print('setting win...')
 print('loading images...')
 pos1 = [200, -200]
 pos2 = [-200, -200]
-rectangle_right = psychopy.visual.Rect(win=win, units="pix", width=gratings_h_size[0] + 10, height=gratings_h_size[1] + 10,lineColor='green', colorSpace='rgb', pos=pos1)
-rectangle_left = psychopy.visual.Rect(win=win, units="pix", width=gratings_v_size[0] + 10, height=gratings_v_size[1] + 10,lineColor='green', colorSpace='rgb', pos=pos2)
+rectangle_YourChoiceR = psychopy.visual.Rect(win=win, units="pix", width=gratings_h_size[0] + 10, height=gratings_h_size[1] + 10,lineColor='green', colorSpace='rgb', pos=pos1)
+rectangle_YourChoiceL = psychopy.visual.Rect(win=win, units="pix", width=gratings_v_size[0] + 10, height=gratings_v_size[1] + 10,lineColor='green', colorSpace='rgb', pos=pos2)
 gratings_h = psychopy.visual.ImageStim(win=win, image="gratings_h.png", color=(1.0, 1.0, 1.0), size=gratings_h_size, units='pix', pos=pos1)
 gratings_v = psychopy.visual.ImageStim(win=win, image="gratings_v.png", color=(1.0, 1.0, 1.0), size=gratings_v_size, units='pix', pos=pos2)
 fixation_cross = psychopy.visual.ImageStim(win=win, image="fixation_cross.png", color=(1.0, 1.0, 1.0), size=fixationcross_size, units='pix', pos=[0, 200])
