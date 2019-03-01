@@ -24,6 +24,30 @@ import numpy as np
 from numpy.random import random, randint, normal, shuffle
 from psychopy.visual import ImageStim
 
+
+
+"""
+SET VARIABLES
+"""
+# Monitor parameters
+MON_DISTANCE = 60 # Distance between subject's eyes and monitor
+MON_WIDTH = 50 # Width of your monitor in cm
+MON_SIZE = [1024, 768] # Pixel dimensions of your monito
+SAVE_FOLDER = 'templateData' # Log is saved to this folder. The folder is created if it doesn't exist
+
+# Create psychopy window
+my_monitor = monitors.Monitor('testMonitor', width=MON_WIDTH, distance=MON_DISTANCE)  # Create monitor object from the variables above. This is needed to control size of stimuli in degrees.
+my_monitor.setSizePix(MON_SIZE)
+win = visual.Window(monitor=my_monitor, units='deg', fullscr=True, allowGUI=False, color='black')  # Initiate psychopy Window as the object "win", using the myMon object from last line. Use degree as units!
+
+
+# Timings
+
+FRAMES_FIX = 30 # in frames ~ 500 ms on 60 Hz
+FRAMES_STIM = [6, 9, 12]  # in frames. ~ 100, 150 and 200 ms on 60 Hz
+FRAMES_MASK = 3  # in frames. ~ 50 ms on 60 Hz
+
+
 #shutdown key
 
 event.globalKeys.add(key='q', func=core.quit, name='shutdown')
@@ -120,6 +144,96 @@ text_stim_screen = psychopy.visual.TextStim(
     text=text_rule_minusone,
     color=(-1, -1, -1), pos=[0, 200])
 
+
+# Setting up stimulus
+
+framesFeedbackChoice = 210
+framesFeedbackPayoff = 70
+ 
+payoffSD = 10 
+# setting
+payoffMean = V['payoffMean']
+# Payoffs 
+payoffboxStable = [random.gauss(payoffMean, payoffSD) for i in rounds] 
+if V['condition'] == '1':
+    payoffboxNoisy = [random.gauss(payoffMean+14, payoffSD) for i in rounds[0:30]]
+    payoffboxNoisy += [random.gauss(payoffMean-14, payoffSD) for i in rounds[30:45]]
+    payoffboxNoisy += [random.gauss(payoffMean+14, payoffSD) for i in rounds[45:63]]
+    payoffboxNoisy += [random.gauss(payoffMean+7, payoffSD) for i in rounds[63:86]]
+    payoffboxNoisy += [random.gauss(payoffMean-14, payoffSD) for i in rounds[86:100]]
+    payoffboxNoisy += [random.gauss(payoffMean-7, payoffSD) for i in rounds[100:125]]
+    payoffboxNoisy += [random.gauss(payoffMean+7, payoffSD) for i in rounds[125:140]]
+    payoffboxNoisy += [random.gauss(payoffMean-7, payoffSD) for i in rounds[140:162]]
+    payoffboxNoisy += [random.gauss(payoffMean+7, payoffSD) for i in rounds[162:len(rounds)]]
+elif V['condition'] == '2':
+    payoffboxNoisy = [random.gauss(payoffMean-14, payoffSD) for i in rounds[0:30]]
+    payoffboxNoisy += [random.gauss(payoffMean+14, payoffSD) for i in rounds[30:45]]
+    payoffboxNoisy += [random.gauss(payoffMean-14, payoffSD) for i in rounds[45:63]]
+    payoffboxNoisy += [random.gauss(payoffMean-7, payoffSD) for i in rounds[63:86]]
+    payoffboxNoisy += [random.gauss(payoffMean+14, payoffSD) for i in rounds[86:100]]
+    payoffboxNoisy += [random.gauss(payoffMean+7, payoffSD) for i in rounds[100:125]]
+    payoffboxNoisy += [random.gauss(payoffMean-7, payoffSD) for i in rounds[125:140]]
+    payoffboxNoisy += [random.gauss(payoffMean+7, payoffSD) for i in rounds[140:162]]
+    payoffboxNoisy += [random.gauss(payoffMean-7, payoffSD) for i in rounds[162:len(rounds)]]
+else:
+    payoffboxNoisy = [0 for i in rounds] # チェック用
+# the correct answer
+if V['condition'] == '1':  #define correct answer for sensitivity to reward and copy this to control cond number 1
+    correctAns = ['right' for i in rounds[0:30]]
+    correctAns += ['left' for i in rounds[30:45]]
+    correctAns += ['right' for i in rounds[45:63]]
+    correctAns += ['right' for i in rounds[63:86]]
+    correctAns += ['left' for i in rounds[86:100]]
+    correctAns += ['left' for i in rounds[100:125]]
+    correctAns += ['right' for i in rounds[125:140]]
+    correctAns += ['left' for i in rounds[140:162]]
+    correctAns += ['right' for i in rounds[162:len(rounds)]]
+elif V['condition'] == '2': #define correct answer for sensitivity to punishment and copy this to control cond number 2
+    correctAns = ['left' for i in rounds[0:30]]
+    correctAns += ['right' for i in rounds[30:45]]
+    correctAns += ['left' for i in rounds[45:63]]
+    correctAns += ['left' for i in rounds[63:86]]
+    correctAns += ['right' for i in rounds[86:100]]
+    correctAns += ['right' for i in rounds[100:125]]
+    correctAns += ['left' for i in rounds[125:140]]
+    correctAns += ['right' for i in rounds[140:162]]
+    correctAns += ['left' for i in rounds[162:len(rounds)]]
+
+def feedback(trial):
+
+    if trial['response'] == 'left':
+        choice = u''
+        if V['condition'] in {'1', '2'}:
+            payoff = trial['payoffboxStable']
+        else:
+            payoff = trial['payoffboxNoisy']
+    else:
+        choice = u''
+        if V['condition'] in {'1', '2'}:
+            payoff = trial['payoffboxNoisy']
+        else:
+            payoff = trial['payoffboxStable']
+ 
+    # feedback 
+    textFeedbackPayoff = str(payoff)
+    # feedback
+    textFeedbackPayoff = str(payoff)
+ 
+    # Draw the TextStims to visual buffer, then show it and reset timing immediately (at stimulus onset)
+    feedbackText.setText(textFeedbackPayoff)
+    if trial['response'] == 'right':
+        feedbackText.pos = (0.47, 0)
+    elif trial['response'] == 'left':
+        feedbackText.pos = (-0.47, 0)
+    boxStable.draw()
+    boxNoisy.draw()
+    boxYourChoice_L.draw() if trial['response']=='left' else boxYourChoice_R.draw()
+    feedbackText.draw()
+    win.flip()
+    keyboard.reset()
+    return payoff
+ 
+
 # def gender
 
 print('define gender')
@@ -148,6 +262,7 @@ def get_starting_screen_control (starting_screen_list):
         return result[0], result[1]
 
 baseline_screen_rew_list = {"text_rule_minusone": ('-1£'), "arms": ('gratings_h','gratings_v')}
+
 
 def get_baseline_screen_cont_reward (baseline_screen_rew_list):
         result = (baseline_screen_rew_list)
@@ -234,9 +349,9 @@ def bandit_task_control (selected_value, arms, stimuli, feedback, window):
     if selected_value > 0:
         starting_screen = get_starting_screen_control (([fixation_cross, True],[arms, True]))
         print('display fixation cross and arms')
-        core.wait(0.5)
+        psychopy.core.wait(0.5)
     print ('starting_screen_control is %s' % (starting_screen_control))
-   # starting_screen_control.draw(window)
+    print(get_starting_screen_control)
     win.flip()
 
     baseline_screen = ""
@@ -393,6 +508,10 @@ logging.console.setLevel(logging.WARNING)  # this outputs to the screen, not a f
 # endExpNow = False  # flag for 'escape' or other condition => quit the exp
 
 trialClock = core.Clock()
+
+# store correct response, save it also on excel file
+
+resp.corr 
 
 # add functions for probabilities underlying successul feedback.
 

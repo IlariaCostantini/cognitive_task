@@ -26,6 +26,30 @@ import numpy as np
 from numpy.random import random, randint, normal, shuffle
 from psychopy.visual import ImageStim
 
+
+"""
+SET VARIABLES
+"""
+# Monitor parameters
+MON_DISTANCE = 60 # Distance between subject's eyes and monitor
+MON_WIDTH = 50 # Width of your monitor in cm
+MON_SIZE = [1024, 768] # Pixel dimensions of your monito
+SAVE_FOLDER = 'templateData' # Log is saved to this folder. The folder is created if it doesn't exist
+
+# Create psychopy window
+my_monitor = monitors.Monitor('testMonitor', width=MON_WIDTH, distance=MON_DISTANCE)  # Create monitor object from the variables above. This is needed to control size of stimuli in degrees.
+my_monitor.setSizePix(MON_SIZE)
+win = visual.Window(monitor=my_monitor, units='deg', fullscr=True, allowGUI=False, color='black')  # Initiate psychopy Window as the object "win", using the myMon object from last line. Use degree as units!
+
+
+# Timings
+
+FRAMES_FIX = 30 # in frames ~ 500 ms on 60 Hz
+FRAMES_STIM = [6, 9, 12]  # in frames. ~ 100, 150 and 200 ms on 60 Hz
+FRAMES_MASK = 3  # in frames. ~ 50 ms on 60 Hz
+
+
+
 #shutdown key
 
 event.globalKeys.add(key='q', func=core.quit, name='shutdown')
@@ -135,6 +159,40 @@ elif gender == "o":
 else:
     sys.exit("Unknown gender")
 
+def feedback(trial):
+
+    if trial['response'] == 'left':
+        choice = u''
+        if V['condition'] in {'1', '2'}:
+            payoff = trial['payoffboxStable']
+        else:
+            payoff = trial['payoffboxNoisy']
+    else:
+        choice = u''
+        if V['condition'] in {'1', '2'}:
+            payoff = trial['payoffboxNoisy']
+        else:
+            payoff = trial['payoffboxStable']
+ 
+    # feedback 
+    textFeedbackPayoff = str(payoff)
+    # feedback
+    textFeedbackPayoff = str(payoff)
+ 
+    # Draw the TextStims to visual buffer, then show it and reset timing immediately (at stimulus onset)
+    feedbackText.setText(textFeedbackPayoff)
+    if trial['response'] == 'right':
+        feedbackText.pos = (0.47, 0)
+    elif trial['response'] == 'left':
+        feedbackText.pos = (-0.47, 0)
+    boxStable.draw()
+    boxNoisy.draw()
+    boxYourChoice_L.draw() if trial['response']=='left' else boxYourChoice_R.draw()
+    feedbackText.draw()
+    win.flip()
+    keyboard.reset()
+    return payoff
+ 
 
 def get_instructions (instruction_list):
         result = (instruction_list)
@@ -392,14 +450,7 @@ logging.console.setLevel(logging.WARNING)  # this outputs to the screen, not a f
 # endExpNow = False  # flag for 'escape' or other condition => quit the exp
 
 
-# background and images size settings  all conditions
-print('draw image')
-
-
-# arms settings control condition
-
 trialClock = core.Clock()
-
 
 # add functions for probabilities underlying successul feedback.
 
@@ -420,10 +471,6 @@ clock = psychopy.core.Clock()
 n_trials = 200
 pre_duration_s = 0.5  # wait before sghowing the stimuli 500 ms
 stim_duration_s = 3
-
-
-
-# define function for the task
 
 
 # cleaning up, closing the window and experiment
