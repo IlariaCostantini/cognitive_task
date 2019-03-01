@@ -13,7 +13,7 @@ import psychopy
 import psychopy.gui
 import xlrd
 import csv
-from psychopy import core, visual, data, event, logging, clock
+from psychopy import core, visual, data, event, logging, clock, monitors
 import random
 import time as clock
 import pygame
@@ -34,25 +34,7 @@ SET VARIABLES
 MON_DISTANCE = 60 # Distance between subject's eyes and monitor
 MON_WIDTH = 50 # Width of your monitor in cm
 MON_SIZE = [1024, 768] # Pixel dimensions of your monito
-SAVE_FOLDER = 'templateData' # Log is saved to this folder. The folder is created if it doesn't exist
-
-# Create psychopy window
-my_monitor = monitors.Monitor('testMonitor', width=MON_WIDTH, distance=MON_DISTANCE)  # Create monitor object from the variables above. This is needed to control size of stimuli in degrees.
-my_monitor.setSizePix(MON_SIZE)
-win = visual.Window(monitor=my_monitor, units='deg', fullscr=True, allowGUI=False, color='black')  # Initiate psychopy Window as the object "win", using the myMon object from last line. Use degree as units!
-
-
-# Timings
-
-FRAMES_FIX = 30 # in frames ~ 500 ms on 60 Hz
-FRAMES_STIM = [6, 9, 12]  # in frames. ~ 100, 150 and 200 ms on 60 Hz
-FRAMES_MASK = 3  # in frames. ~ 50 ms on 60 Hz
-
-
-
-#shutdown key
-
-event.globalKeys.add(key='q', func=core.quit, name='shutdown')
+SAVE_FOLDER = 'data' # Log is saved to this folder. The folder is created if it doesn't exist
 
 # upload excel reward structure
 
@@ -77,6 +59,11 @@ age = int(gui.data[2])
 gender = (gui.data[3])
 
 print(gui.data[3])
+
+#fileName = V['condition_num'] +V['participant_num']+'['+ time.strftime('%Y%m%d-%H%M', time.localtime())+').tsv'
+
+
+
 
 # creating and checking file location
 
@@ -159,40 +146,7 @@ elif gender == "o":
 else:
     sys.exit("Unknown gender")
 
-def feedback(trial):
 
-    if trial['response'] == 'left':
-        choice = u''
-        if V['condition'] in {'1', '2'}:
-            payoff = trial['payoffboxStable']
-        else:
-            payoff = trial['payoffboxNoisy']
-    else:
-        choice = u''
-        if V['condition'] in {'1', '2'}:
-            payoff = trial['payoffboxNoisy']
-        else:
-            payoff = trial['payoffboxStable']
- 
-    # feedback 
-    textFeedbackPayoff = str(payoff)
-    # feedback
-    textFeedbackPayoff = str(payoff)
- 
-    # Draw the TextStims to visual buffer, then show it and reset timing immediately (at stimulus onset)
-    feedbackText.setText(textFeedbackPayoff)
-    if trial['response'] == 'right':
-        feedbackText.pos = (0.47, 0)
-    elif trial['response'] == 'left':
-        feedbackText.pos = (-0.47, 0)
-    boxStable.draw()
-    boxNoisy.draw()
-    boxYourChoice_L.draw() if trial['response']=='left' else boxYourChoice_R.draw()
-    feedbackText.draw()
-    win.flip()
-    keyboard.reset()
-    return payoff
- 
 
 def get_instructions (instruction_list):
         result = (instruction_list)
@@ -224,7 +178,7 @@ def get_baseline_screen_expt_punishment (baseline_screen_pun_list):
 
 baseline_screen_pun_list = {"neuface": ('neutralface'), "arms": ('toy1','toy2')}
 
-
+# messages 
 # instructions experimental block of reward condition (earn money)
 INSTRUCTIONS_REWARD_EXP = """INSTRUCTIONS:
     Over the fixation point will be presented a distressed baby face, 
@@ -252,6 +206,7 @@ INSTRUCTIONS_PUNISHMENT_EXP = """INSTRUCTIONS:
 
     Press 'space' bar to begin.
     """
+
 
 #starting_screen_experimental
 
@@ -550,9 +505,9 @@ if trials.thisN % 100 != 0:  # this isn't trial number 100, 200, 300...
 
 
 # Thanks screen common across conditions
-if trials.thisN % 200 != 0:
-        continueRoutine = False
-        return "thanks"
+#if trials.thisN % 200 != 0:
+  #     continueRoutine = False
+  #  return "thanks"
 print('thanks')
 thanks= "Congratulations, you have completed the experimental session! Pass to the control session, ask the experimenter :)"
 text_stim_screen=psychopy.visual.TextStim(
