@@ -103,8 +103,8 @@ print('setting win...')
 print('loading images...')
 pos1 = [200, -200]
 pos2 = [-200, -200]
-rectangle_right = psychopy.visual.Rect(win=win, units="pix", width=toy1_size[0] + 10, height=toy1_size[1] + 10,lineColor='green', colorSpace='rgb', pos=pos1)
-rectangle_left = psychopy.visual.Rect(win=win, units="pix", width=toy2_size[0] + 10, height=toy2_size[1] + 10,lineColor='green', colorSpace='rgb', pos=pos2)
+rectangle_YourChoiceR = psychopy.visual.Rect(win=win, units="pix", width=toy1_size[0] + 10, height=toy1_size[1] + 10,lineColor='green', colorSpace='rgb', pos=pos1)
+rectangle_YourChoiceL = psychopy.visual.Rect(win=win, units="pix", width=toy2_size[0] + 10, height=toy2_size[1] + 10,lineColor='green', colorSpace='rgb', pos=pos2)
 toy1 = psychopy.visual.ImageStim(win=win, image="toy1_bear.png", color=(1.0, 1.0, 1.0), size=toy1_size, units='pix', pos=pos1)  # type: ImageStim
 toy2 = psychopy.visual.ImageStim(win=win, image="toy2_duck.png", color=(1.0, 1.0, 1.0), size=toy2_size, units='pix', pos=pos2)
 happyface = psychopy.visual.ImageStim(win=win, image="babyhappy2.png", color=(1.0, 1.0, 1.0), size=facehappy_size, units='pix', pos=[0, 200])
@@ -267,15 +267,10 @@ def feedback(trial):
     if trial['response'] == 'left':
         choice = u'left'
         if ['cond_num'] in {'1', '2'}:
-            payoff = trial['payoffsucc']
+            payoff = trial['payofftoy1']
         else:
-            payoff = trial['payoffunsucc']
-    else:
-        choice = u'right'
-        if ['cond_num'] in {'1', '2'}:
-            payoff = trial['payoffsucc']
-        else:
-            payoff = trial['payoffunsucc']
+            payoff = trial['payofftoy2']
+
 
 
 # the correct answer
@@ -580,6 +575,11 @@ trials.finished = True
 if trials.thisN % 100 != 0:  # this isn't trial number 100, 200, 300...
     continueRoutine = False  # so don't run the pause routine this time.
 
+# record data
+
+recordData = '\t\t\t'+str(trial['condition_num']) + '\t' + str(trial['participant_num']) +'\t'+ str(trial['meanPayoff']) +'\t' + str(trial['payofftoy1']) +'\t' = str(trial['payofftoy2']) +'\t'+str\
+(trial['correctAns']) +'\t'+ str(trial['response']) +'\t'+str(trial['correctCount']) +'\t'+'\t'+str(trial['payoff']) +'\t'+str(cumulativePayoff) +'\t'+ str(totalScore) 
+controller.recordEvent(recordData) 
 
 # psychopy.event.waitKeys()
 # clock = psychopy.core.Clock()
