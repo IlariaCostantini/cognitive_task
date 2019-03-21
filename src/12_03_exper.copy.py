@@ -469,5 +469,5 @@ if __name__ == "__main__":
     globalClock = core.Clock()
     trialClock = core.Clock()
 
-core.quit()
-core.close()
+    core.quit()
+    core.close()
