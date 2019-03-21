@@ -17,8 +17,9 @@ import numpy as np
 NUMBER_OF_ITERATION = 10
 
 reaction_times= []
-leftoutcomes= []
-rightoutcomes= []
+#leftoutcomes= []
+#rightoutcomes= []
+feedbacks = []
 pressed_lefts= []
 pos_right = [200, -200]
 pos_left = [-200, -200]
@@ -301,8 +302,8 @@ def feedback (is_reward, is_even, window, right_highlight, left_highlight, toy_b
     rnd_right_outcome_punish =  random.choice(right_outcome_punish)
     rnd_left_outcome_punish =  random.choice(left_outcome_punish)
 
-    status = () 
-#    status = None
+  #  status = () 
+    status = None
     if is_reward is True: 
         if pressed_left:
             print('is_reward=%s'%is_reward)
@@ -366,7 +367,7 @@ def feedback (is_reward, is_even, window, right_highlight, left_highlight, toy_b
         toy_duck.draw(window)
         window.flip()
 
-    feedback.append(int(feedback))
+    feedbacks.append(str(feedback))
 
     core.wait(1)
 
@@ -440,9 +441,9 @@ if __name__ == "__main__":
   #          for i in range(0, len(reaction_times)):
   #              file.write('%d,%d,%d,%.4f,%s,%s,%s,%s,%s\n'%(participant_number, cond_num, i, reaction_times[i], left_outcome_reward[i],  right_outcome_reward[i], left_outcome_punish[i], right_outcome_punish[i], pressed_lefts[i]))
     with open(filename, 'a') as file:
-            file.write('participant_num, cond_num, cpt_iteration, reaction_times,feedback, pressed_left\n')
+            file.write('participant_num, cond_num, cpt_iteration, reaction_times,feedbacks, pressed_left\n')
             for i in range(0, len(reaction_times)):
-                file.write('%d,%d,%d,%.4f,%d,%s\n'%(participant_number, cond_num, i, reaction_times[i], feedback[i], pressed_lefts[i]))
+                file.write('%d,%d,%d,%.4f,%s,%s\n'%(participant_number, cond_num, i, reaction_times[i], feedbacks[i], pressed_lefts[i]))
 
     # determine when a key is pressed
     clock = psychopy.core.Clock()
