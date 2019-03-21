@@ -8,6 +8,7 @@ import xlrd
 import random
 from psychopy import core, visual, data, event, logging, clock
 import os
+import sys
 import pandas as pd
 #logging.console.setLevel(logging.DEBUG)
 import time
@@ -31,8 +32,13 @@ def load_conditions():
     load conditions
     """
 
-    file_paths = { 'reward': r'C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\Experimental - Copy\sensitivity_reward_condition_exc.xlsx',
+    if sys.platform.startswith('win32'):
+        file_path = { 'reward': r'C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\Experimental - Copy\sensitivity_reward_condition_exc.xlsx',
                    'punishment': r'C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\Experimental - Copy\sensitivity_punishment_condition_exc.xlsx'
+                 }
+    elif (sys.platform.startswith('darwin') or sys.platform.startswith('linux') ):
+        file_path = { 'reward': r'../input_data/sensitivity_reward_condition_exc.xlsx',
+                   'punishment': r'../input_data/sensitivity_punishment_condition_exc.xlsx'
                  }
     psychopy.logging.debug('upload conditions....')
     dataFile_reward = pd.read_excel(file_path['reward'])
