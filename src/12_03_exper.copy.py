@@ -40,9 +40,9 @@ def load_conditions():
     dataFile_punishment= pd.read_excel(r'C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\Experimental - Copy\sensitivity_punishment_condition_exc.xlsx')
     
     
-    ppsychopy.logging.debug('conditions uploaded....')
+    psychopy.logging.debug('conditions uploaded....')
     
-    ppsychopy.logging.debug('define which column to use for what...')
+    psychopy.logging.debug('define which column to use for what...')
     
     #need to convert pandas dataframe to python list after append.
     df = pd.ExcelFile(r'C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\Experimental - Copy\sensitivity_reward_condition_exc.xlsx').parse('sensitivity_reward') 
