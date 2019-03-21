@@ -26,43 +26,47 @@ pos_left = [-200, -200]
 rt = clock.getTime()
 # take reaction times
 
-# upload conditions
-left_outcome_reward= []
-right_outcome_reward = []
-left_outcome_punish= []
-right_outcome_punish = []
-print('upload conditions....')
-dataFile_reward = pd.read_excel(r'C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\Experimental - Copy\sensitivity_reward_condition_exc.xlsx')
-dataFile_punishment= pd.read_excel(r'C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\Experimental - Copy\sensitivity_punishment_condition_exc.xlsx')
+def load_conditions():
+    """
+    load conditions
+    """
 
-
-print('conditions uploaded....')
-
-print('define which column to use for what...')
-
-#need to convert pandas dataframe to python list after append.
-df = pd.ExcelFile(r'C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\Experimental - Copy\sensitivity_reward_condition_exc.xlsx').parse('sensitivity_reward') 
-right_outcome_reward=[]
-right_outcome_reward.append(df['right_outcome'])
-right_outcome_reward = right_outcome_reward[0].values.tolist()
-
-df = pd.ExcelFile(r'C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\Experimental - Copy\sensitivity_reward_condition_exc.xlsx').parse('sensitivity_reward') 
-left_outcome_reward=[]
-left_outcome_reward.append(df['left_outcome'])
-left_outcome_reward = left_outcome_reward[0].values.tolist()
-
-df = pd.ExcelFile(r'C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\Experimental - Copy\sensitivity_punishment_condition_exc.xlsx').parse('sensitivity_punishment')
-right_outcome_punish=[]
-right_outcome_punish.append(df['right_outcome'])
-right_outcome_punish = right_outcome_punish[0].values.tolist()
-
-df = pd.ExcelFile(r'C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\Experimental - Copy\sensitivity_punishment_condition_exc.xlsx').parse('sensitivity_punishment')
-left_outcome_punish=[]
-left_outcome_punish.append(df['left_outcome'])
-left_outcome_punish = left_outcome_punish[0].values.tolist()
-
-print('column defined!', right_outcome_reward, left_outcome_reward)
-
+    left_outcome_reward= []
+    right_outcome_reward = []
+    left_outcome_punish= []
+    right_outcome_punish = []
+    psychopy.logging.debug('upload conditions....')
+    dataFile_reward = pd.read_excel(r'C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\Experimental - Copy\sensitivity_reward_condition_exc.xlsx')
+    dataFile_punishment= pd.read_excel(r'C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\Experimental - Copy\sensitivity_punishment_condition_exc.xlsx')
+    
+    
+    ppsychopy.logging.debug('conditions uploaded....')
+    
+    ppsychopy.logging.debug('define which column to use for what...')
+    
+    #need to convert pandas dataframe to python list after append.
+    df = pd.ExcelFile(r'C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\Experimental - Copy\sensitivity_reward_condition_exc.xlsx').parse('sensitivity_reward') 
+    right_outcome_reward=[]
+    right_outcome_reward.append(df['right_outcome'])
+    right_outcome_reward = right_outcome_reward[0].values.tolist()
+    
+    df = pd.ExcelFile(r'C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\Experimental - Copy\sensitivity_reward_condition_exc.xlsx').parse('sensitivity_reward') 
+    left_outcome_reward=[]
+    left_outcome_reward.append(df['left_outcome'])
+    left_outcome_reward = left_outcome_reward[0].values.tolist()
+    
+    df = pd.ExcelFile(r'C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\Experimental - Copy\sensitivity_punishment_condition_exc.xlsx').parse('sensitivity_punishment')
+    right_outcome_punish=[]
+    right_outcome_punish.append(df['right_outcome'])
+    right_outcome_punish = right_outcome_punish[0].values.tolist()
+    
+    df = pd.ExcelFile(r'C:\Users\ic18563\OneDrive - University of Bristol\python different\python start\Experimental - Copy\sensitivity_punishment_condition_exc.xlsx').parse('sensitivity_punishment')
+    left_outcome_punish=[]
+    left_outcome_punish.append(df['left_outcome'])
+    left_outcome_punish = left_outcome_punish[0].values.tolist()
+    
+    psychopy.logging.debug('column defined!', right_outcome_reward, left_outcome_reward)
+    return right_outcome_reward, left_outcome_reward, right_outcome_punish, left_outcome_punish
 
 # define welcome,break, thanks, equal across conditions
 WELCOME = """
@@ -386,7 +390,7 @@ if __name__ == "__main__":
     
     print("windows elements are ready for use.")
 
-
+    (right_outcome_reward, left_outcome_reward, right_outcome_punish, left_outcome_punish) = load_conditions()
 
     cpt_iteration = 1
     while True:
