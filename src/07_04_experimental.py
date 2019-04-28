@@ -61,8 +61,10 @@ def load_conditions():
     return right_outcomes, left_outcomes
 
 
-WELCOME = "Welcome to our study. Thanks for taking part to this experiment! Press the'SPACE' bar to continue"
-BREAK = "Take a break before continuing. Press the 'SPACE' bar to continue"
+WELCOME = "Welcome to our study. Thanks for taking part to this experiment!"\
+"\n You will ask you to rate the emotion of some faces and then proceed to the experiment"\
+"\n Press the'SPACE' bar to continue"
+BREAK = "Take a break before continuing. Press the 'SPACE' bar when you are ready to continue"
 THANKS = "Congratulations! you have completed this session!Thanks for your contribution!!!call the experimenter now :) "
 # instructions experimental block of reward condition (soothe the baby)
 INSTRUCTIONS_REWARD_EXP = "Over the fixation point a distressed baby face will be presented, your task is to" \
@@ -290,8 +292,10 @@ def parse_image_name_from_file(filename):
 
 
 def rating_scale(window, cpt):
-    QUESTION = "Please try to evaluate as fast as possible the emotion expressed by the following images. Where left is " \
-               "very sad and right very happy, and with middle value representing completely neutral."
+    QUESTION = "You will see 3 different infant faces"\
+    "\n try to evaluate as fast as possible the emotion expressed by the following images."\ 
+    "\n Where left is very sad and right very happy, and with middle value representing completely neutral."\
+    "\n Press 'space' when you are ready to rate!"
     REMINDER = "Rate an emotion."
     show_message(window, QUESTION)
     psychopy.event.waitKeys(keyList=['space'])
