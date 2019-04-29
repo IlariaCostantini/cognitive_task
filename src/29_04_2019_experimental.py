@@ -64,14 +64,14 @@ def load_conditions():
 WELCOME = "Welcome to our study.\n\nThanks for taking part to this experiment!"\
 "\nFirstly you will be asked to rate the emotion of some faces and then to proceed to the main experiment."\
 "\n\nPlease press the'SPACE' bar to continue"
-BREAK = "You are doing great,\n\n You are halfway to finish the task.\nTake a break before continuing, your concentration is really important to us.\nPress the 'SPACE' bar when you are ready to continue..."
+BREAK = "You are doing great,\n\nYou are halfway to finish the task.\nTake a break before continuing, your concentration is really important to us.\nPress the 'SPACE' bar when you are ready to continue..."
 THANKS = "Congratulations!!!\n\nyou have completed this session. Please take few seconds to rate the following images.\n\nYou contribution is really valuable to us!"
 CONGRATULATIONS = "Congratulations!!!\n\nYou completed the experiment.\nThanks for your participation!Call the experimenter."
 # instructions experimental block of reward condition (soothe the baby)
 INSTRUCTIONS_REWARD_EXP = "INSTRUCTIONS BANDIT TASK.\n\nOver the fixation point a distressed baby face will be presented, your task is to" \
                           " soothe the baby, by choosing  one of the 2 toys available.\nOne of the two toys is more " \
                           "likely to work and stop the baby crying or even make the baby smile! The other toy will not" \
-                          " produce any change.\nUse the left and the right arrows of the keyboard to select the toy you think is better and" \
+                          "produce any change.\nUse the left and the right arrows of the keyboard to select the toy you think is better and" \
                           "\nTRY TO SOOTHE THE BABY AS MUCH AS POSSIBLE!\n\nPay attention, the good toy may change!\n\n"\
                           "Good luck! \n\nPress 'SPACE' to begin."
 
