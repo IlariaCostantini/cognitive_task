@@ -3,6 +3,8 @@
 
 import os
 import random
+import numpy
+from numpy.random import random, randint, normal, shuffle
 import sys
 import pandas as pd
 import psychopy
@@ -19,8 +21,11 @@ OFFSET = 1
 reaction_times_experiment = []
 initial_ratings = []
 final_ratings = []
+initial_ratings_temperament = []
+final_ratings_tmeperament = []
 feedbacks = []
 pressed_lefts = []
+#pressed_pauses = [] #added pressed paused\delete pauses
 pos_right = [200, -200]
 pos_left = [-200, -200]
 screen_size = [1000, 1000]
@@ -28,7 +33,7 @@ toy_size = [200, 200]
 face_size = [150, 200]
 fixation_cross_size = [200, 200]
 initial_pos = [0, 150]
-
+width=(0.01, 0.1)[0]
 
 def load_conditions():
     """
@@ -64,14 +69,14 @@ def load_conditions():
 WELCOME = "Welcome to our study.\n\nThanks for taking part to this experiment!"\
 "\nFirstly you will be asked to rate the emotion of some faces and then to proceed to the main experiment."\
 "\n\nPlease press the'SPACE' bar to continue"
-BREAK = "You are doing great,\n\nYou are halfway to finish the task.\nTake a break before continuing, your concentration is really important to us.\nPress the 'SPACE' bar when you are ready to continue..."
+BREAK = "You are doing great,\n\nYou are in a paused mood.\nPress the 'SPACE' bar when you are ready to continue..."
 THANKS = "Congratulations!!!\n\nyou have completed this session. Please take few seconds to rate the following images.\n\nYou contribution is really valuable to us!"
 CONGRATULATIONS = "Congratulations!!!\n\nYou completed the experiment.\nThanks for your participation!Call the experimenter."
 # instructions experimental block of reward condition (soothe the baby)
 INSTRUCTIONS_REWARD_EXP = "INSTRUCTIONS BANDIT TASK.\n\nOver the fixation point a distressed baby face will be presented, your task is to" \
-                          " soothe the baby, by choosing  one of the 2 toys available.\nOne of the two toys is more " \
-                          "likely to work and stop the baby crying or even make the baby smile! The other toy will not" \
-                          "produce any change.\nUse the left and the right arrows of the keyboard to select the toy you think is better and" \
+                          " soothe the baby, by choosing one of the 2 toys available.\nOne of the two toys is more " \
+                          "likely to work and stop the baby crying or even make the baby smile!" \
+                          "\nUse the left and the right arrows of the keyboard to select the toy you think is better and" \
                           "\nTRY TO SOOTHE THE BABY AS MUCH AS POSSIBLE!\n\nPay attention, the good toy may change!\n\n"\
                           "Good luck! \n\nPress 'SPACE' to begin."
 
@@ -79,8 +84,8 @@ INSTRUCTIONS_REWARD_EXP = "INSTRUCTIONS BANDIT TASK.\n\nOver the fixation point 
 # instructions experimental block of punishment condition (excite the baby)
 INSTRUCTIONS_PUNISHMENT_EXP = "INSTRUCTIONS BANDIT TASK.\n\nOver the fixation point a happy baby face will be presented, your task is to keep the" \
                               "baby happy with one of the 2 toys available.\nOne of the two is more successful and it" \
-                              " will keep the baby smiling! The other toy may stop the baby from being " \
-                              "happy (neutral face) or may even distress the baby!\nUse the left and the right arrows " \
+                              "will keep the baby smiling!" \
+                              "\nUse the left and the right arrows " \
                               "to select the toy you think is better and \nTRY TO KEEP THE BABY HAPPY " \
                               "AS MUCH AS POSSIBLE!\n\n Pay attention, the good toy may change!" \
                               "\n\nGood luck!\n\nPress 'SPACE' bar to begin."
@@ -90,31 +95,37 @@ def init_elements_in_window():
     window = init_window()
 
     rectangle_right = psychopy.visual.Rect(win=window, units="pix", width=toy_size[0] + 10, height=toy_size[1] + 10,
-                                           lineColor='green', colorSpace='rgb', pos=pos_right)
+                                        lineColor='green', colorSpace='rgb', pos=pos_right)
     rectangle_left = psychopy.visual.Rect(win=window, units="pix", width=toy_size[0] + 10, height=toy_size[1] + 10,
-                                          lineColor='green', colorSpace='rgb', pos=pos_left)
+                                        lineColor='green', colorSpace='rgb', pos=pos_left)
     toy_bear = psychopy.visual.ImageStim(win=window, image="toy1_bear.png", color=(1.0, 1.0, 1.0), size=toy_size,
-                                         units='pix',
-                                         pos=pos_right)
+                                        units='pix',
+                                        pos=pos_right)
     toy_duck = psychopy.visual.ImageStim(win=window, image="toy2_duck.png", color=(1.0, 1.0, 1.0), size=toy_size,
-                                         units='pix',
-                                         pos=pos_left)
+                                        units='pix',
+                                        pos=pos_left)
     happy_face = psychopy.visual.ImageStim(win=window, image="baby_happy.png", color=(1.0, 1.0, 1.0),
-                                           size=face_size,
-                                           units='pix', pos=initial_pos)
+                                        size=face_size,
+                                        units='pix', pos=initial_pos)
     neutral_face = psychopy.visual.ImageStim(win=window, image="baby_neutral.png", color=(1.0, 1.0, 1.0),
-                                             size=face_size,
-                                             units='pix', pos=initial_pos)
+                                        size=face_size,
+                                        units='pix', pos=initial_pos)
 
     sad_face = psychopy.visual.ImageStim(win=window, image="baby_sad.png", color=(1.0, 1.0, 1.0), size=face_size,
-                                         units='pix', pos=initial_pos)
+                                        units='pix', pos=initial_pos)
     fixation_cross = psychopy.visual.ImageStim(win=window, image="fix_cros.png", color=(1.0, 1.0, 1.0),
-                                               size=fixation_cross_size, units='pix', pos=[0, 150])
+                                        size=fixation_cross_size, units='pix', pos=[0, 150])
     right_highlight = psychopy.visual.Rect(win=window, pos=pos_right, width=250, height=250, color=(0.0, 1.0, 0.0),
-                                           units='pix')
+                                        units='pix')
     left_highlight = psychopy.visual.Rect(win=window, pos=pos_left, width=250, height=250, color=(0.0, 1.0, 0.0),
-                                          units='pix')
-    return window, rectangle_right, rectangle_left, toy_bear, toy_duck, happy_face, neutral_face, sad_face, fixation_cross, right_highlight, left_highlight
+                                        units='pix')
+    rectangle_time = visual.Rect(win=window, name='rectangle_time',width=(1.5, 0.1)[0], height=(1.5, 0.1)[1],ori=0, pos=(0, -0.75),
+                                        lineWidth=10, lineColor=[-1,-1,-1], lineColorSpace='rgb',fillColor=[0,0,0], fillColorSpace='rgb',
+                                        opacity=1, depth=0.0, interpolate=True)
+    rectangle_time_passing = visual.Rect(win=window, name='rectangle_time_passing',width=(0.01, 0.1)[0], height=(0.01, 0.1)[1],ori=0, pos=(-0.75, -0.75),lineWidth=10, 
+                                        lineColor=[-1,-1,-1], lineColorSpace='rgb',fillColor=[1,-1,-1], fillColorSpace='rgb',
+                                        opacity=1, depth=-1.0, interpolate=True)
+    return window, rectangle_right, rectangle_left, toy_bear, toy_duck, happy_face, neutral_face, sad_face, fixation_cross, right_highlight, left_highlight, rectangle_time, rectangle_time_passing
 
 
 def init_window():
@@ -177,10 +188,10 @@ def show_dialog_and_get_info():
         gui_error.show()
         if gui_error.OK:
             print("user clicked ok!")
+            show_dialog_and_get_info()  #now it save just the correct data!!
         else:
             print("user clicked cancel!")
             exit()
-        show_dialog_and_get_info()
 
     return participant_number, cond_num, age, gender
 
@@ -195,10 +206,12 @@ def show_message(window, msg):
 
 def show_messages_and_wait(window, cpt):
     messages = {'welcome': WELCOME,
-                'break': BREAK,
+               # 'break': BREAK,
                 'thanks': THANKS,
                 'congratulations': CONGRATULATIONS}
-    this_message = {0 + OFFSET: 'welcome', 5 + OFFSET: 'break', TOTAL_NUMBER_OF_TRIALS + OFFSET: 'thanks',TOTAL_NUMBER_OF_TRIALS + OFFSET+3: 'congratulations'}
+    this_message = {0 + OFFSET: 'welcome',
+    #cpt_iteration + OFFSET: 'break', 
+    TOTAL_NUMBER_OF_TRIALS + OFFSET: 'thanks',TOTAL_NUMBER_OF_TRIALS + OFFSET+5: 'congratulations'} #make it has received the feedback and he starts from new cpt
     try:
         text = messages[this_message[cpt]]
     except KeyError:
@@ -213,6 +226,7 @@ def show_messages_and_wait(window, cpt):
     print("user pressed space -> go to next step !")
     if cpt - 1 == TOTAL_NUMBER_OF_TRIALS or cpt == 1:
         rating_scale(window, cpt)
+        rating_scale_temperament(window, cpt)
 
 
 def show_instructions_and_wait(window, is_reward, cpt):
@@ -282,6 +296,20 @@ def init_rating_scale():
     rating_scale.acceptBox.pos = [-10, -100]
     return rating_scale
 
+def init_rating_scale_temperament():
+    rating_scale = visual.RatingScale(window, low=0,
+                                      high=1,
+                                      scale='rate the temperament',
+                                      size=1.0,
+                                      precision=100,
+                                      markerStart=0.5,
+                                      stretch=2.0,
+                                      textColor='Gray',
+                                      mouseOnly=True,
+                                      showValue=False
+                                      )
+    rating_scale.acceptBox.pos = [-10, -100]
+    return rating_scale
 
 def parse_image_name_from_file(filename):
     if filename == 'baby_happy.png':
@@ -348,12 +376,79 @@ def rating_scale(window, cpt):
             decision_time = rating_scale.getRT()
             window.flip()
 
-        print('the rating score is %d, the decisiomn time is %d, the base line face is %d' % (
+        print('the rating score is %d, the decision time is %d, the base line face is %d' % (
         rating, decision_time, base_line))
         if cpt == 1:
             initial_ratings.append([rating, decision_time, base_line])
         else:
             final_ratings.append([rating, decision_time, base_line])
+
+    happy_face.pos = initial_pos
+    neutral_face.pos = initial_pos
+    sad_face.pos = initial_pos
+
+
+def rating_scale_temperament(window, cpt):
+    QUESTION = "INTRUCTIONS RATING SCALE\n\nRate the temperament!\n\nTry to evaluate the temperament of the baby you have just seen. If you think the baby is a 'easy' baby use the mouse to select easy at the left of the rating scale.\nWhile if you think the baby has a 'difficult' temperament select values at the right of the rating scale.n\nUse the MOUSE to provide your feedbcak by clicking one point on the line below the face.\nClick 'accept' to proceed.\nNow press 'space' when you are ready to rate!"
+    REMINDER = "Rate the temperament."
+    show_message(window, QUESTION)
+    psychopy.event.waitKeys(keyList=['space'])
+
+    rating_scale_temperament = init_rating_scale_temperament()
+
+    offset_y = 130
+    happy_face.pos = [happy_face.pos[0], happy_face.pos[1] - offset_y]
+    neutral_face.pos = [neutral_face.pos[0], neutral_face.pos[1] - offset_y]
+    sad_face.pos = [sad_face.pos[0], sad_face.pos[1] - offset_y]
+
+    text_question = psychopy.visual.TextStim(
+        win=window,
+        text=REMINDER,
+        color=(-1, -1, -1),
+        wrapWidth=screen_size[0] / 1.5,
+        height=30.0)
+    text_question.pos = [text_question.pos[0], sad_face.pos[1] + offset_y * 2]
+    text_very_difficult = psychopy.visual.TextStim(
+        win=window,
+        text='Very Difficult',
+        color=(-1, -1, -1),
+        height=30.0)
+    text_very_difficult.pos = [rating_scale_temperament.pos[0] - 600, rating_scale_temperament.pos[1] - 140]
+
+    text_very_easy = psychopy.visual.TextStim(
+        win=window,
+        text='Very Easy',
+        color=(-1, -1, -1),
+        height=30.0)
+    text_very_easy.pos = [rating_scale_temperament.pos[0] + 600, rating_scale_temperament.pos[1] - 140]
+
+    image_list = [happy_face, neutral_face, sad_face]
+    random.shuffle(image_list)
+
+    for image in image_list:
+        base_line_temperament = parse_image_name_from_file(image._imName)
+        rating_scale_temperament = init_rating_scale()
+        rating_temperament = None
+        decision_time_temperament = None
+        while rating_scale_temperament.noResponse:
+            rating_scale_temperament.draw()
+            text_question.draw(window)
+            text_very_difficult.draw(window)
+            text_very_easy.draw(window)
+            image.draw(window)
+            rating_temperament = rating_scale_temperament.getRating() * 100  # according to cpt you'll know when has been completed
+            if rating_temperament != 50.0:
+                rating_scale_temperament.acceptBox.pos = [0, 0]
+
+            decision_time_temperament = rating_scale_temperament.getRT()
+            window.flip()
+
+        print('the rating score is %d, the decision time is %d, the base line face is %d' % (
+        rating_temperament, decision_time_temperament, base_line_temperament))
+        if cpt == 1:
+            initial_ratings_temperament.append([rating_temperament, decision_time_temperament, base_line_temperament])
+        else:
+            final_ratings_temperament.append([rating_temperament, decision_time_temperament, base_line_temperament])
 
     happy_face.pos = initial_pos
     neutral_face.pos = initial_pos
@@ -383,8 +478,8 @@ def experiment_trial(is_reward, window, right_highlight, left_highlight, toy_bea
     toy_duck.draw(window)
 
     window.flip()
-    start = time.time()
-    response = psychopy.event.waitKeys(keyList=['left', 'right', 'escape'])
+    start = time.time() 
+    response = psychopy.event.waitKeys(keyList=['left', 'right', 'escape']) #add break if they press space\ removed space
     end = time.time()
     reaction_time = end - start
     print('reaction time is', reaction_time)
@@ -400,6 +495,11 @@ def experiment_trial(is_reward, window, right_highlight, left_highlight, toy_bea
     if 'right' in response:
         pressed_left = False
         right_highlight.draw(window)
+  #  if 'space' in response:  #added break
+   #     continueRoutine = False
+   #     show_message(window, BREAK)
+   #     psychopy.event.waitKeys(keyList=['space'])  #CHECK WHY IS SKIPPING ONE TRIAL
+   #     continueRoutine = True
     if 'escape' in response:
         window.close()
         core.quit()
@@ -408,6 +508,7 @@ def experiment_trial(is_reward, window, right_highlight, left_highlight, toy_bea
     toy_duck.draw(window)
     window.flip()
     feedback(window, toy_bear, toy_duck, happy_face, neutral_face, sad_face, pressed_left)
+    #pressed_pauses.append(pressed_pause)
     pressed_lefts.append(pressed_left)
 
 
@@ -415,18 +516,22 @@ def experiment_trial(is_reward, window, right_highlight, left_highlight, toy_bea
 def feedback(window, toy_bear, toy_duck, happy_face, neutral_face,
              sad_face, pressed_left):
     print('start feedback...')
-    rnd_right_outcome = random.choice(right_outcomes)
-    rnd_left_outcome = random.choice(left_outcomes)
+    #for right_outcome in range(0, len(right_outcomes)):
+    #   print (right_outcomes[right_outcome])
+    #for left_outcome in range(0, len(left_outcomes)):
+   #     print (left_outcomes[left_outcome])
+    right_outcome = normal.choice.right_outcomes #not random anymore: removed random.choice(right_outcomes)
+    left_outcome = normal.choice.left_outcomes
 
     if pressed_left:
         print('is_reward=%s' % is_reward)
         print('pressed_left')
-        feedback_value = rnd_left_outcome
+        feedback_value = left_outcome #not random anymore: removed rnd_left_outcome
     else:
         print('is_reward=%s' % is_reward)
         print('pressed_right')
-        feedback_value = rnd_right_outcome
-    print('feedback is % d' % feedback_value)
+        feedback_value = right_outcome
+    print('feedback is % d'% feedback_value)
 
     core.wait(0.5)
 
@@ -444,6 +549,13 @@ def feedback(window, toy_bear, toy_duck, happy_face, neutral_face,
 
     window.flip()
     core.wait(1)
+
+def time_passing(window, cpt_iteration, rectangle_time, rectangle_time_passing):
+        if cpt ==2:
+            rectangle_time.draw
+            for cpt in cpt_iteration+100:   #set as you had to complete 300 trials. at each trials 0.1 of width more in rectangle_time_passing
+                rectangle_time_passing.draw + width
+                window.flip()
 
 
 def create_directory(name):
@@ -466,7 +578,7 @@ if __name__ == "__main__":
         is_reward = True
     elif cond_num == 2:
         is_reward = False
-    window, rectangle_right, rectangle_left, toy_bear, toy_duck, happy_face, neutral_face, sad_face, fixation_cross, right_highlight, left_highlight = init_elements_in_window()
+    window, rectangle_right, rectangle_left, toy_bear, toy_duck, happy_face, neutral_face, sad_face, fixation_cross, right_highlight, left_highlight, rectangle_time, rectangle_time_passing = init_elements_in_window()
 
     position_arms(window, is_even(participant_number), toy_bear, toy_duck, pos_left, pos_right)
 
@@ -480,12 +592,13 @@ if __name__ == "__main__":
 
         if cpt_iteration == TOTAL_NUMBER_OF_TRIALS + OFFSET:  # to have N you need to put n+1
             break
-        experiment_trial(is_reward, window, right_highlight, left_highlight, toy_bear, toy_duck,
-                         happy_face, neutral_face, sad_face)
+        experiment_trial(is_reward, window, right_highlight, left_highlight, toy_bear, toy_duck, 
+                        happy_face, neutral_face, sad_face)
         cpt_iteration += 1
         print("%d experiment trials has been performed." % (cpt_iteration - 1))
 
-    show_message(window, CONGRATULATIONS) #CHANGED FROM THANKS
+    show_message(window, CONGRATULATIONS)
+    core.wait(3)
 
     # Store info about the experiment session
     expName = 'bandit_exp'
@@ -518,14 +631,17 @@ if __name__ == "__main__":
         if sheet_name == 'rating':
             row = 0
             row_headers = ['initial_base_line', 'initial_rating_score', 'initial_reaction_time',
-                           'final_base_line', 'final_rating_score', 'final_reaction_time']
+                           'final_base_line', 'final_rating_score', 'final_reaction_time','initial_base_line_temperament','initial_rating_score_temperament','initial_reaction_time_temperament',
+                           'final_base_line_temperament', 'final_rating_score_temperament', 'final_reaction_time_temperament']
             worksheet.write_row(row, col, tuple(row_headers))
 
             for i in range(0, len(initial_ratings)):
                 row += 1
                 worksheet.write_row(row, col,
                                     tuple((initial_ratings[i][2], initial_ratings[i][0], initial_ratings[i][1],
-                                           final_ratings[i][2], final_ratings[i][0], final_ratings[i][1])))
+                                           final_ratings[i][2], final_ratings[i][0], final_ratings[i][1],
+                                           initial_ratings_temperament[i][2], initial_rantings_temperament[i][0], initial_ratings_temperament[i][1],
+                                           final_ratings_temperament[i][2],final_ratings_temperament[i][0], final_ratings_temperament[i][1])))
 
     workbook.close()
     core.quit()
