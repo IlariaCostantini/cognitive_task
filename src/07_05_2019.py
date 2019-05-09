@@ -1,4 +1,4 @@
-# 29/04/2019 definitive version
+#07/05/2019 definitive version
 # Author: Ilaria Costantini
 
 import os
@@ -15,7 +15,7 @@ import xlsxwriter
 
 logging.console.setLevel(logging.DEBUG)
 
-TOTAL_NUMBER_OF_TRIALS = 5
+TOTAL_NUMBER_OF_TRIALS = 200
 OFFSET = 1
 
 reaction_times_experiment = []
@@ -25,7 +25,6 @@ initial_ratings_temperament = []
 final_ratings_temperament = []
 feedbacks = []
 pressed_lefts = []
-# pressed_pauses = [] #added pressed paused\delete pauses
 pos_right = [200, -200]
 pos_left = [-200, -200]
 screen_size = [1000, 1000]
@@ -34,7 +33,7 @@ face_size = [150, 200]
 fixation_cross_size = [200, 200]
 initial_pos = [0, 150]
 
-#width = (0.01, 0.1)[0]
+
 
 
 def load_conditions():
@@ -43,7 +42,7 @@ def load_conditions():
     """
     print("system platform is = %s" % sys.platform)
     file_path = {
-        'condition': r'O:\bandit_task\bandit_task\condition.xlsx'
+        'condition': r'condition.xlsx'
     }
 
     if sys.platform.startswith('macOS'):  # are these the right info?
@@ -140,7 +139,7 @@ def init_window():
     window = psychopy.visual.Window(
         units='pix',
         size=screen_size,
-        fullscr=True,
+        fullscr=False,
         # change in True when you run the actual experiment and change the screen size into the actual size of the screen of the pc you will use
         color=[0, 0, 0])
     return window
@@ -148,10 +147,10 @@ def init_window():
 
 def init_and_show_gui():
     gui = psychopy.gui.Dlg()
-    gui.addField("Participant Number:", "001")
-    gui.addField("Condition Number:", 1)
-    gui.addField("Age:", 26)
-    gui.addField("Gender(m/f/o):", "f")
+    gui.addField("Participant Number:", "")
+    gui.addField("Condition Number:", )
+    gui.addField("Age:", )
+    gui.addField("Gender(m/f/o):", "")
     gui.show()
     print(gui.data)
     return gui
@@ -626,7 +625,7 @@ if __name__ == "__main__":
         print("%d experiment trials has been performed." % (cpt_iteration - 1))
 
     show_message(window, CONGRATULATIONS)
-  #  core.wait(2)
+    core.wait(2)
 
     # Store info about the experiment session
     expName = 'bandit_exp'
@@ -639,7 +638,7 @@ if __name__ == "__main__":
     filename = directory_name + '/' + '%d_%s_%s.xlsx' % (participant_number, expName, expInfo['date'])
     print('filepath is %s' % filename)
 
-    list_name = ['bandit_task', "rating"]
+    list_name = ['bandit_task', 'rating']
 
     workbook = xlsxwriter.Workbook(filename)
     row = 0
@@ -665,7 +664,6 @@ if __name__ == "__main__":
                            'final_base_line_temperament', 'final_rating_score_temperament',
                            'final_reaction_time_temperament']
             worksheet.write_row(row, col, tuple(row_headers))
-
             for i in range(0, len(initial_ratings)):
                 row += 1
                 worksheet.write_row(row, col,
@@ -673,8 +671,8 @@ if __name__ == "__main__":
                                            final_ratings[i][2], final_ratings[i][0], final_ratings[i][1],
                                            initial_ratings_temperament[i][2], initial_ratings_temperament[i][0],
                                            initial_ratings_temperament[i][1],
-                                           final_ratings_temperament[i][2], final_ratings_temperament[i][0],
-                                           final_ratings_temperament[i][1])))
-        workbook.close()
-        core.quit()
-        core.close()
+                                           final_ratings_temperament[i][2], final_ratings_temperament[i][0], final_ratings_temperament[i][1])))
+ 
+    workbook.close()
+    core.quit()
+    core.close()
