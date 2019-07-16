@@ -1,4 +1,4 @@
-#07/05/2019 definitive version
+   #07/05/2019 definitive version
 # Author: Ilaria Costantini
 
 import os
@@ -68,24 +68,24 @@ def load_conditions():
 
 
 WELCOME = "Welcome to our study.\n\nThanks for taking part to this experiment!" \
-          "\nFirstly you will be asked to rate the emotion of some faces and then to proceed to the main experiment." \
+          "\nFirstly you will be asked to rate the emotion and the temperament of some infant faces and then to proceed to the main experiment." \
           "\n\nPlease press the'SPACE' bar to continue"
 BREAK = "You are doing great,\n\nYou are in a paused mood.\nPress the 'SPACE' bar when you are ready to continue..."
-THANKS = "Congratulations!!!\n\nyou have completed this session. Please take few seconds to rate the following images.\n\nYou contribution is really valuable to us!"
-CONGRATULATIONS = "Congratulations!!!\n\nYou completed the experiment.\nThanks for your participation!Call the experimenter."
+THANKS = "Congratulations!!!\n\nyou have completed this session. Please take few seconds to rate the following images.\n\nYou contribution is really valuable to us!\n\n Press 'SPACE' to proceed."
+CONGRATULATIONS = "Congratulations!!!\n\nYou completed the experiment.\nThanks for your participation! Call the experimenter."
 # instructions experimental block of reward condition (soothe the baby)
-INSTRUCTIONS_REWARD_EXP = "INSTRUCTIONS BANDIT TASK.\n\nOver the fixation point a distressed baby face will be presented, your task is to" \
-                          " soothe the baby, by choosing one of the 2 toys available.\nOne of the two toys is more " \
+INSTRUCTIONS_REWARD_EXP = "INSTRUCTIONS BANDIT TASK.\n\nOver the fixation point a distressed baby face will be presented, your task is to " \
+                          "soothe the baby, by choosing one of the 2 toys available.\nOne of the two toys is more " \
                           "likely to work and stop the baby crying or even make the baby smile!" \
                           "\nUse the left and the right arrows of the keyboard to select the toy you think is better and" \
                           "\nTRY TO SOOTHE THE BABY AS MUCH AS POSSIBLE!\n\nPay attention, the good toy may change!\n\n" \
                           "Good luck! \n\nPress 'SPACE' to begin."
 
 # instructions experimental block of punishment condition (excite the baby)
-INSTRUCTIONS_PUNISHMENT_EXP = "INSTRUCTIONS BANDIT TASK.\n\nOver the fixation point a happy baby face will be presented, your task is to keep the" \
-                              "baby happy with one of the 2 toys available.\nOne of the two is more successful and it" \
+INSTRUCTIONS_PUNISHMENT_EXP = "INSTRUCTIONS BANDIT TASK.\n\nOver the fixation point a happy baby face will be presented, your task is to keep the " \
+                              "baby happy with one of the 2 toys available.\nOne of the two is more successful and it " \
                               "will keep the baby smiling!" \
-                              "\nUse the left and the right arrows " \
+                              "\nUse the left and the right arrows of the keyboard " \
                               "to select the toy you think is better and \nTRY TO KEEP THE BABY HAPPY " \
                               "AS MUCH AS POSSIBLE!\n\n Pay attention, the good toy may change!" \
                               "\n\nGood luck!\n\nPress 'SPACE' bar to begin."
@@ -139,7 +139,7 @@ def init_window():
     window = psychopy.visual.Window(
         units='pix',
         size=screen_size,
-        fullscr=False,
+        fullscr=True,
         # change in True when you run the actual experiment and change the screen size into the actual size of the screen of the pc you will use
         color=[0, 0, 0])
     return window
@@ -333,7 +333,7 @@ def parse_image_name_from_file(filename):
 
 
 def rating_scale(window, cpt):
-    QUESTION = "INTRUCTIONS RATING SCALE\n\nRate the emotions!\n\nYou will see 3 different infant faces.\nTry to evaluate as fast as possible the emotion expressed by the following images.\nWhere left is very sad and right very happy, and with middle value representing completely neutral.\n\nUse the MOUSE to provide your feedbcak by clicking one point on the line below the face.\nClick 'accept' to proceed.\nNow press 'space' when you are ready to rate!"
+    QUESTION = "INTRUCTIONS RATING SCALE\n\nRate the emotions!\n\nYou will see 3 different infant faces.\nTry to evaluate as fast as possible the emotion expressed by the following images.\nWhere the left of the scale is very sad and right very happy, and with middle value representing completely neutral.\n\nUse the MOUSE to provide your feedback by clicking one point on the line below the face.\nClick 'accept' to proceed.\nNow press 'space' when you are ready to rate!"
     REMINDER = "Rate an emotion."
     show_message(window, QUESTION)
     psychopy.event.waitKeys(keyList=['space'])
@@ -400,7 +400,7 @@ def rating_scale(window, cpt):
 
 
 def rating_scale_temperament(window, cpt):
-    QUESTION = "INTRUCTIONS RATING SCALE\n\nRate the temperament!\n\nTry to evaluate the temperament of the baby you have just seen. If you think the baby is a 'easy' baby use the mouse to select easy at the left of the rating scale.\nWhile if you think the baby has a 'difficult' temperament select values at the right of the rating scale.n\nUse the MOUSE to provide your feedbcak by clicking one point on the line below the face.\nClick 'accept' to proceed.\nNow press 'space' when you are ready to rate!"
+    QUESTION = "INTRUCTIONS RATING SCALE\n\nRate the temperament!\n\nTry to evaluate the temperament (easy vs difficult baby) of the following infants. Use the mouse to rate the temperament, where at the left of the rating scale is an 'easy' baby and at the right a 'difficult' baby.\n\nUse the MOUSE to provide your feedbcak by clicking one point on the line below the face.\nClick 'accept' to proceed.\nNow press 'space' when you are ready to rate!"
     REMINDER = "Rate the temperament."
     show_message(window, QUESTION)
     psychopy.event.waitKeys(keyList=['space'])
