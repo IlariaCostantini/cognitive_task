@@ -1,0 +1,15 @@
+Reward Structure obtained with 200 runs of simulation with these parameters: 
+
+ nTrials=200; % total number of trials
+ nSwitches=5; % number of (step) changes in the outcome probabilities
+ blockSize=nTrials/nSwitches; % number of trials between switches in the outcome probabilities
+ % Define multinomial probability parameters for the better (row 1) and
+ % worse (row 2) bandits.
+ pOutcomes=[0.25 0.15 0.60; 0.60 0.15 0.25];
+ pWindow=40; % Number of trials within which the *frequency* of outcomes matches the nominal probabilities
+
+Best performance was reached with: 
+
+bestAlpha = 0.5263
+bestTau = 0.2195
+
